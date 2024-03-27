@@ -1,0 +1,33 @@
+/*
+The _calendar variable below can be customized to be static dates or AUTOCALENDAR. I prefer
+to use a datefield that exists within my dataset and include all dates from the January 1
+of the minimum date present through December 31 of the Max date present. Mileage may vary, 
+customize as needed.
+*/
+Calendar = 
+
+VAR _calendar =
+CALENDAR(
+        DATE ( YEAR ( MIN ( 'Table'[date_field] ) ), 1, 1 ),
+        DATE ( YEAR ( MAX ( 'Table'[date_field] ) ), 12, 31 )
+    )
+RETURN
+ADDCOLUMNS(
+    _calendar,
+    "year", YEAR( [Date] ),
+    "month_number", MONTH ( [Date] ),
+    "month", FORMAT ( [Date], "mmm" ),
+    "month_year_number", FORMAT ( [Date], "yy mm" ),
+    "month_year", FORMAT ( [Date], "mmm yyyy" ),
+    "weekday_number", WEEKDAY ( [Date], 2 ),
+    "weekday", FORMAT ( [Date], "ddd" ),
+    "fiscal_year", 
+        VAR YearStartMonth = 7
+        VAR YearEndMonth = 6
+        VAR CurrentMonth = MONTH ( [Date] )
+        VAR CurrentYear = YEAR ( [Date] )
+        VAR FiscalYearStart = IF ( CurrentMonth >= YearStartMonth, CurrentYear, CurrentYear - 1 )
+        VAR FiscalYearEnd = FiscalYearStart + 1
+        RETURN
+            FORMAT (FiscalYearStart, "00" ) & "-" & FORMAT ( FiscalYearEnd, "00" )
+)
