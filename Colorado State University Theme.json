@@ -1,0 +1,178 @@
+﻿{
+   "name":"Colorado State University",
+   "$schema":"https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/Report%20Theme%20JSON%20Schema/reportThemeSchema-2.126.json",
+   "dataColors":
+      [
+      "#1E4D2B",
+      "#D9782D",
+      "#9FAFA1",
+      "#6B7B6E",
+      "#004C6A",
+      "#1D7D9D",
+      "#C8C372",
+      "#59595B",
+      "#C9D845",
+      "#CC5430",
+      "#12A4B6",
+      "#ECC530"
+      ],
+   "background":"#F0F4F9",
+   "foreground":"#003366",
+   "tableAccent":"#214F80",
+   "textClasses":{
+      "label":{
+         "color":"#59595B",
+         "fontSize":12
+      },
+      "title":
+         {
+         "color":"#59595B",
+         "fontSize":14
+         },
+      "header":
+         {
+         "color":"#59595B"
+         }
+   },
+   "visualStyles":{
+      "*":{
+         "*":{
+            "background":[
+               {
+                  "transparency":0
+               }
+            ],
+            "visualHeader":[
+               {
+               "foreground":{"solid":{"color":"#1E4D2B"}}
+               }
+            ],
+            "outspacePane":[
+               {
+               "foregroundColor":{"solid":{"color":"#1E4D2B"}},
+               "checkboxAndApplyColor":{"solid":{"color":"#9FAFA1"}}
+               }
+            ],
+            "filterCard":[
+               {
+               "$id":"Applied",
+               "foregroundColor":{"solid":{"color":"#59595B"}},
+               "textSize":11
+               },
+               {
+               "$id":"Available",
+               "foregroundColor":{"solid":{"color":"#59595B"}},
+               "textSize":11
+               }
+            ],
+            "padding":[
+               {
+               "bottom": 0,
+               "top": 0,
+               "left": 0,
+               "right": 0
+               }
+            ],
+            "border": [
+               {
+               "color": {"solid": "#FFFFFF"},
+               "radius": 10,
+               "show": true
+               }
+            ]
+         }
+      },
+      "page":{
+         "*":{
+            "background":[
+               {
+                  "color":{"solid":{"color":"#F0F4F9"}},
+                  "transparency":0
+               }
+            ]
+         }
+      },
+      "card": {
+         "*":{
+               "general": [
+                  {
+                  "keepLayerOrder": true
+                  }
+               ],
+               "categoryLabels": [
+                  {
+                  "show": false
+                  }
+               ],
+               "border": [
+                  {
+                  "show": true,
+                  "color": {"solid": {"color": "#1E4D2B"}},
+                  "radius": 10
+                  }
+               ],
+               "background": [
+                  {
+                  "show": true,
+                  "color":{"solid": {"color": "#FFFFFF"}},
+                  "transparency": 0
+                  }
+               ],
+               "padding": [
+                  {
+                  "left": 0,
+                  "right": 0,
+                  "bottom": 20,
+                  "top": 0
+                  }
+               ],
+               "labels": [
+                  {
+                  "fontSize": 36
+                  }
+               ]
+         }
+         
+      },
+      "tableEx": {
+         "*":{
+            "values": [
+               {
+               "fontColorPrimary": { "solid": { "color": "#003950"}},
+               "backColorPrimary": { "solid": { "color": "#FFFFFF"}},
+               "fontColorSecondary": { "solid": { "color": "#003950"}},
+               "backColorSecondary": { "solid": { "color": "#F0F4F9"}},
+               "outline": "Frame",
+               "urlIcon": true,
+               "wordWrap": true,
+               "fontFamily": "Segoe UI",
+               "fontSize": 12
+               }
+            ],
+            "columnHeaders": [
+               {
+               "wordWrap": false,
+               "autoSizeColumnWidth": false,
+               "fontColor":{"solid": {"color": "#FFFFFF"}},
+               "backColor":{"solid": {"color": "#FFFFFF"}}
+               }
+            ],
+            "stylePreset": [{"name": "Minimal"}],
+            "border": [
+               {
+               "color":{"solid": {"color": "#FFFFFF"}},
+               "show": true,
+               "radius": 10
+               }
+            ],
+            "background": [
+               {
+               "show": true,
+               "color":{"solid": {"color": "#FFFFFF"}}
+                  }
+            ]
+         }
+      }
+   },
+   "bad":"#D64554"
+}
