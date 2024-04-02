@@ -1,0 +1,19 @@
+M_%_change = 
+VAR count_variable = COUNTROWS(Table)
+VAR previous_year = 
+    CALCULATE(
+        [count_variable],
+        DATEADD('Calendar'[Date], -1, YEAR)
+    )
+VAR PercentageChange =
+    IF(
+        ISBLANK(previous_year),
+        BLANK(),
+        (count_variable - previous_year) / previous_year
+    )
+RETURN
+IF(
+    ISBLANK(PercentageChange),
+    BLANK(),
+    FORMAT(PercentageChange, "+0.00%; -0.00%")
+)
