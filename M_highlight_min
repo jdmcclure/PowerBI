@@ -1,0 +1,17 @@
+bar_to_highlight =
+    VAR _yeartotals =
+    CALCULATETABLE(
+            ADDCOLUMNS(
+                SUMMARIZE( 'Calendar', 'Calendar'[Year] ),
+                "@TotalSales", [Total Sales],
+                "@MonthCount", CALCULATE ( DISTINCTCOUNT ( 'Calendar'[Month] ) )
+            ), ALLSELECTED())
+    VAR _yearsw12months =
+        FILTER ( _yeartotals, [@MonthCount] = 12)
+    VAR _minyearsales =
+        MINX ( _yearsw12months, [@TotalSales] )
+    VAR _result =
+        SWITCH ( TRUE(), _minyearsales = _currentsales, "#99C9F7", "#0079EB" )
+    RETURN
+    _result
+    )
