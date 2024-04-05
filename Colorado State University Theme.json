@@ -1,5 +1,5 @@
 ﻿{
-   "name":"Colorado State University",
+   "name":"Colorado State University Theme",
    "$schema":"https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/Report%20Theme%20JSON%20Schema/reportThemeSchema-2.126.json",
    "dataColors":
       [
