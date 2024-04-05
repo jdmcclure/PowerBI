@@ -2,6 +2,7 @@
 > Nothing fancy. A simple depot for me to share my Power BI/DAX solutions where users can recommend improvements or changes.
 
 M_ - Measure
+
 CF_ - Conditional Formatting
 
 ## Release History
