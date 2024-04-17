@@ -18,9 +18,9 @@
       ],
    "background":"#F0F4F9",
    "tableAccent":"#1E4D2B",
-   "minimum": "#a5cbd8",
-   "maximum": "#0f3f4f",
-   "center": "#4a97b1",
+   "minimum": "#A5CBD8",
+   "maximum": "#0F3F4F",
+   "center": "#4A97B1",
    "bad":"#D64554",
    "textClasses":{
       "label":
@@ -195,14 +195,14 @@
                "radius": 10,
                "show": true
                }
-           ],
+            ],
             "background": [
                {
                "color": {"solid": {"color": "#FFFFFF"}},
                "show": false,
                "transparency": 0
                }
-           ]
+            ]
          }
       }
    }
