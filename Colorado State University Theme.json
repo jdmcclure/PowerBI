@@ -82,7 +82,7 @@
             ],
             "border": [
                {
-               "color": {"solid": "#FFFFFF"},
+               "color": {"solid":{"color": "#FFFFFF"}},
                "radius": 10,
                "show": true
                }
@@ -114,7 +114,7 @@
                "border": [
                   {
                   "show": true,
-                  "color": {"solid": {"color": "#1E4D2B"}},
+                  "color": {"solid": {"color": "#FFFFFF"}},
                   "radius": 10
                   }
                ],
