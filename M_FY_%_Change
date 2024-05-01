@@ -1,0 +1,24 @@
+M_fyoy_award_%_change = 
+VAR award_count = COUNTROWS(AWARD_HIST)
+VAR previous_year_count = 
+    CALCULATE(
+        COUNTROWS(AWARD_HIST),
+        DATEADD('Calendar'[Date], -1, YEAR)
+    )
+VAR max_fiscal_year = MAXX(ALL('Calendar'), 'Calendar'[fiscal_year])
+VAR percentage_change =
+    IF(
+        ISBLANK(previous_year_count),
+        BLANK(),
+        DIVIDE(award_count - previous_year_count, previous_year_count)
+    )
+RETURN
+IF(
+    MAX('Calendar'[fiscal_year]) = max_fiscal_year,
+    "Incomplete",
+    IF(
+        ISBLANK(percentage_change),
+        BLANK(),
+        FORMAT(percentage_change, "+0.00%; -0.00%")
+    )
+)
