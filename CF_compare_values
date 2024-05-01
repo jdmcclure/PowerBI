@@ -1,0 +1,6 @@
+CF_name = 
+IF(
+    [M_measure_1] = [M_measure_2], // If measure 1 is equal to measure 2
+    "Green", // color green
+    "Red" // else color red. You can replace these colors with hex if you want to maintain theme colors.
+)
