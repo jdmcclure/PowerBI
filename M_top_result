@@ -1,0 +1,12 @@
+//This is meant to iterate over a list and pull the top result.
+//I use it to set a maximum for bar charts.
+
+M_top_result = 
+VAR vt = 
+SUMMARIZE(
+    'Table',
+    'Table'[GROUPBY_COLUMN],
+    "Whatever you want to name the column", [Measure]
+)
+RETURN
+    MAXX(vt, [Measure]) //This measure should be the same as the one used above.
