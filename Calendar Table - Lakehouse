@@ -1,14 +1,22 @@
 let
-		StartDate = #date(2014,01,01) ,
-		EndDate =  Date.EndOfYear(Date.AddYears( Date.From(DateTime.FixedLocalNow()),5)), 
-		Source = List.Dates( StartDate,
-						Duration.Days( EndDate- StartDate) +1, 
-						#duration(1,0,0,0) ),
-		#"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
-		#"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "Date"}}),
-		#"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"Date", type date}}),
-        #"Added Custom26" = Table.AddColumn(#"Added Custom36", "Month Year", each Date.ToText([Date],"MMM-yyyy")),
-        #"Added Custom27" = Table.AddColumn(#"Added Custom26", "Month Year Sort", each Date.Year([Date])*100 +Date.Month([Date])),
+	StartDate = Date.StartOfYear(Date.AddYears(Date.From(DateTime.FixedLocalNow()), -10)),
+	EndDate =  Date.EndOfYear(Date.AddYears(Date.From(DateTime.FixedLocalNow()),5)), 
+	Source = List.Dates(StartDate,
+					Duration.Days( EndDate - StartDate) +1, 
+					#duration(1,0,0,0) ),
+	#"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+	#"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "date"}}),
+	#"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"date", type date}}),
+	#"Added Month Year" = Table.AddColumn(#"Changed Type", "month_year", each Date.ToText([date],"MMM-yyyy")),
+	#"Added Month Year Sort" = Table.AddColumn(#"Added Month Year", "month_year_sort", each Date.Year([date])*100 +Date.Month([date])),
+	#"Added Fiscal Year Month" = Table.AddColumn(#"Added Month Year Sort", "fy_month", each if Date.Month([date]) >= 7 then Date.Month([date]) - Date.Month([fy_start]) +1
+	else Date.Month([date]) - Date.Month([fy_start])+1+12),
+	#"Added Fiscal Year" = Table.AddColumn(#"Added Fiscal Year Month", "fiscal_year", each if Date.Month([date]) < 7 then Date.Year([date]) else Date.Year([date]) + 1),
+	#"Changed Column Types" = Table.TransformColumnTypes(#"Added Fiscal Year", {{"fy_start", type datetime}, {"fy_end", type datetime}})
+in
+	#"Changed Column Types"
+
+
         #"Added Custom1" = Table.AddColumn(#"Added Custom27", "StartOfWeek", each Date.StartOfWeek([Date],1)),
         #"Added Custom35" = Table.AddColumn(#"Added Custom1", "End of Week", each Date.EndOfWeek([Date],1)),
 		#"Added Custom2" = Table.AddColumn(#"Added Custom35", "StartOfYear", each Date.StartOfYear([Date])),
