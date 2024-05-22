@@ -1,12 +1,3 @@
-/*
-The _calendar variable below can be customized to be static dates or AUTOCALENDAR. I prefer
-to use a datefield that exists within my dataset and include all dates from the January 1
-of the minimum date present through December 31 of the Max date present. Mileage may vary, 
-customize as needed.
-Note: Using a Calculated Table is less demanding on resources than using a calculated column version
-of a calendar table. I would recommend using the calculated table (below) so the model can 
-partition properly
-*/
 Calendar = 
 
 VAR _calendar =
