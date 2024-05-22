@@ -32,5 +32,7 @@ ADDCOLUMNS(
         VAR FiscalYearStart = IF ( CurrentMonth >= YearStartMonth, CurrentYear, CurrentYear - 1 )
         VAR FiscalYearEnd = FiscalYearStart + 1
         RETURN
-            FORMAT (FiscalYearStart, "00" ) & "-" & FORMAT ( FiscalYearEnd, "00" )
+            FiscalYearEnd,
+            //FORMAT (FiscalYearStart, "00" ) & "-" & FORMAT ( FiscalYearEnd, "00" ),
+    "is_weekend", IF ( WEEKDAY ( [Date], 2 ) > 5, 1, 0 )
 )
