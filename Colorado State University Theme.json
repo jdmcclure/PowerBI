@@ -27,18 +27,18 @@
          {
          "color":"#59595B",
          "fontSize":12,
-         "fontFace": "Verdana"
+         "fontFace": "Segoe UI"
          },
       "title":
          {
          "color":"#59595B",
          "fontSize":14,
-         "fontFace": "Verdana"
+         "fontFace": "Segoe UI"
          },
       "header":
          {
          "color":"#59595B",
-         "fontFace": "Verdana"
+         "fontFace": "Segoe UI"
          }
    },
    "visualStyles":{
@@ -74,10 +74,10 @@
             ],
             "padding":[
                {
-               "bottom": 0,
-               "top": 0,
-               "left": 0,
-               "right": 0
+               "bottom": 10,
+               "top": 10,
+               "left": 10,
+               "right": 10
                }
             ],
             "border": [
@@ -108,7 +108,7 @@
                ],
                "categoryLabels": [
                   {
-                  "show": false
+                  "show": true
                   }
                ],
                "border": [
@@ -127,10 +127,10 @@
                ],
                "padding": [
                   {
-                  "left": 0,
-                  "right": 0,
-                  "bottom": 20,
-                  "top": 0
+                  "left": 10,
+                  "right": 10,
+                  "bottom": 10,
+                  "top": 10
                   }
                ],
                "labels": [
@@ -152,15 +152,15 @@
                "outline": "Frame",
                "urlIcon": true,
                "wordWrap": true,
-               "fontFamily": "Verdana",
-               "fontSize": 12
+               "fontFamily": "Segoe UI",
+               "fontSize": 11
                }
             ],
             "columnHeaders": [
                {
-               "wordWrap": false,
+               "wordWrap": true,
                "autoSizeColumnWidth": false,
-               "fontColor":{"solid": {"color": "#FFFFFF"}},
+               "fontColor":{"solid": {"color": "#666666"}},
                "backColor":{"solid": {"color": "#FFFFFF"}}
                }
             ],
