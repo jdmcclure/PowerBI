@@ -1,0 +1,14 @@
+VAR old =
+CALCULATE(
+    [measure],
+    SAMEPERIODLASTYEAR('Calendar'[Date])
+)
+VAR new = [measure]
+VAR calc = DIVIDE( new - old, old, BLANK())
+RETURN
+    SWITCH(
+        TRUE(),
+        calc > 0.02, "#4b7155",
+        calc < -0.02, "#D9782D",
+        calc <= 0.02 && calc >= -0.02, "#C8C372"
+    )

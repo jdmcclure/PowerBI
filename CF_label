@@ -1,3 +1,4 @@
 //Formats a measure to provide text and a formatted version of the number. 
 // In this case 2,381.8232 would return as "Direct: $2,381.82" to be used in a visual.
+
 CF_direct_label = "Direct:  $" & FORMAT ( ROUND ([Measure], 2 ), "0,0.00" )

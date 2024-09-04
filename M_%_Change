@@ -17,3 +17,12 @@ IF(
     BLANK(),
     FORMAT(PercentageChange, "+0.00%; -0.00%")
 )
+
+
+// ALTERNATIVE
+
+IF(
+        ISBLANK(calc),
+        BLANK(),
+        FORMAT(calc, " ▲ 0.0%; ▼ -0.0%;")
+    )
