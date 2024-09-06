@@ -82,7 +82,7 @@
             ],
             "border": [
                {
-               "color": {"solid":{"color": "#FFFFFF"}},
+               "color": {"solid":{"color": "#F0F4F9"}},
                "radius": 10,
                "show": true
                }
@@ -93,7 +93,7 @@
          "*":{
             "background":[
                {
-                  "color":{"solid":{"color":"#F0F4F9"}},
+                  "color":{"solid":{"color":"#FFFFFF"}},
                   "transparency":0
                }
             ]
@@ -114,14 +114,14 @@
                "border": [
                   {
                   "show": true,
-                  "color": {"solid": {"color": "#FFFFFF"}},
+                  "color": {"solid": {"color": "#F0F4F9"}},
                   "radius": 10
                   }
                ],
                "background": [
                   {
                   "show": true,
-                  "color":{"solid": {"color": "#FFFFFF"}},
+                  "color":{"solid": {"color": "#F0F4F9"}},
                   "transparency": 0
                   }
                ],
@@ -135,7 +135,7 @@
                ],
                "labels": [
                   {
-                  "fontSize": 36
+                  "fontSize": 28
                   }
                ]
          }
@@ -161,13 +161,13 @@
                "wordWrap": true,
                "autoSizeColumnWidth": false,
                "fontColor":{"solid": {"color": "#666666"}},
-               "backColor":{"solid": {"color": "#FFFFFF"}}
+               "backColor":{"solid": {"color": "#F0F4F9"}}
                }
             ],
             "stylePreset": [{"name": "Minimal"}],
             "border": [
                {
-               "color":{"solid": {"color": "#FFFFFF"}},
+               "color":{"solid": {"color": "#F0F4F9"}},
                "show": true,
                "radius": 10
                }
@@ -175,8 +175,16 @@
             "background": [
                {
                "show": true,
-               "color":{"solid": {"color": "#FFFFFF"}}
+               "color":{"solid": {"color": "#F0F4F9"}}
                   }
+            ],
+            "padding": [
+               {
+                  "left": 2,
+                  "right": 5,
+                  "top": 5,
+                  "bottom": 2
+               }
             ]
          }
       },
@@ -185,13 +193,13 @@
             "fill": [
                {
                "show": true,
-               "fillColor": {"solid": {"color": "#FFFFFF"}},
+               "fillColor": {"solid": {"color": "#F0F4F9"}},
                "transparency": 0
                }
             ],
             "border": [
                {
-               "color": {"solid": {"color": "#FFFFFF"}},
+               "color": {"solid": {"color": "#F0F4F9"}},
                "radius": 10,
                "show": true
                }
@@ -201,6 +209,14 @@
                "color": {"solid": {"color": "#FFFFFF"}},
                "show": false,
                "transparency": 0
+               }
+            ],
+            "padding": [
+               {
+                  "left": 5,
+                  "right": 5,
+                  "top": 5,
+                  "bottom": 5
                }
             ]
          }
