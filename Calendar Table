@@ -25,5 +25,20 @@ ADDCOLUMNS(
         RETURN
             FiscalYearEnd,
             //FORMAT (FiscalYearStart, "00" ) & "-" & FORMAT ( FiscalYearEnd, "00" ),
-    "is_weekend", IF ( WEEKDAY ( [Date], 2 ) > 5, 1, 0 )
+    "is_weekend", IF ( WEEKDAY ( [Date], 2 ) > 5, 1, 0 ),
+    "fiscal_month", FORMAT ( [DATE], "mmm"),
+    "fiscal_month_number",
+            VAR CurrentMonth = MONTH ( [Date] )
+            RETURN
+                IF ( CurrentMonth >= 7, CurrentMonth - 6, CurrentMonth + 6 ),
+    "last_5_and_current_fy",
+        VAR CurrentDate = TODAY()
+        VAR CurrentFY = IF ( MONTH( CurrentDate ) >= 7, YEAR( CurrentDate ) + 1, YEAR( CurrentDate ) )
+        VAR DateFY = IF ( MONTH( [Date] ) >= 7, YEAR( [Date] ) + 1, YEAR( [Date] ) )
+        RETURN
+            IF (
+                DateFY >= CurrentFY - 5 && DateFY <= CurrentFY,
+                "True",
+                "False"
+            )
 )

@@ -1,0 +1,6 @@
+// Return the date in the details without including a date in the subtotal
+Measure = 
+IF(
+  ISINSCOPE('Table'[category]),
+  MAX('Table'[date])
+)
