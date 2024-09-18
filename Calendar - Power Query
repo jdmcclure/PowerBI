@@ -186,7 +186,7 @@ let
         Logical.Type
     ),
 
-    //25 Add a flag for the last 5 and current fiscal year
+    //25 Add a flag for the last 5 and current fiscal year. Choose true in a filter to show only the last 5 fiscal years.
     CurrentDate = DateTime.LocalNow(),
     CurrentFY = if Date.Month(CurrentDate) >= 7 then Date.Year(CurrentDate) + 1 else Date.Year(CurrentDate),
     Last_5_and_current_fy = Table.AddColumn(

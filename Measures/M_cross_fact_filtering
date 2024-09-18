@@ -1,0 +1,16 @@
+/*
+
+*/
+
+Fact Table 1 Filtered = 
+    CALCULATE(
+        [Measure],
+        CALCULATETABLE(
+            'TableName',
+            CROSSFILTER(
+                FactTable1[Key],
+                FactTable2[Key],
+                Both
+            )
+        )
+    )

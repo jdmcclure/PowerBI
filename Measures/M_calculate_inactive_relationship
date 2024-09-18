@@ -1,0 +1,8 @@
+/*
+
+*/
+MeasureName = 
+    CALCULATE(
+        [Measure],
+        USERELATIONSHIP('Table1'[Key], 'Table2'[Key])
+    )
