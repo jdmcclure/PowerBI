@@ -1,6 +1,9 @@
-/*
+// Calculates a measure based on an inactive relationship in 
+// the data model. For instance: Calculating a row count based 
+// on the expiration date field (inactice relationship to the
+// calendar table) instead of the creation date field (active
+// relationship to the calendar table)
 
-*/
 MeasureName = 
     CALCULATE(
         [Measure],

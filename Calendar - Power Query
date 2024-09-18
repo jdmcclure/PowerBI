@@ -1,3 +1,6 @@
+// Create a calendar table within Power Query. Great for Dataflows/Lakehouses.
+// Modify the first two steps depending on the range needed.
+
 let
     //1 Set a minimum date of Jan 1 of todays year - 6
     StartDate = Date.StartOfYear(
