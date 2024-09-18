@@ -1,0 +1,27 @@
+// This originated from needing to add multiple columns to a table. Nesting is necessary in this case.
+
+Add_columns = Table.AddColumn(  // The outter AddColumn function
+        Table.AddColumn(  // The inner AddColumn function
+            Previous_step,  // Reference the previous step
+            "NEW_COLUMN_1_NAME",  // Name the first new column
+            each "",  // Insert what you would like in each row
+            Text.Type   // Set the data type (see https://learn.microsoft.com/en-us/power-query/data-types, https://learn.microsoft.com/en-us/powerquery-m/m-spec-values)
+        ), 
+        "NEW_COLUMN_2_NAME", 
+        each "",
+        Text.Type
+    )
+
+// Without the comments:
+
+Add_columns = Table.AddColumn(
+        Table.AddColumn(
+            Previous_step,
+            "NEW_COLUMN_1_NAME", 
+            each "",
+            Text.Type
+        ), 
+        "NEW_COLUMN_2_NAME", 
+        each "",
+        Text.Type
+    )
