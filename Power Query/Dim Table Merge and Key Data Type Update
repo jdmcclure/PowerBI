@@ -1,0 +1,14 @@
+// Navigate to a second table in the same schema to use in a merge. 
+// In this case, the keys data types didn't match so step 2 converts the key 
+// of the dimension table into a number.
+
+Navigate_second_table = Source{[Schema = "colostate_prod", Item = "award_status"]}[Data],
+
+Convert_dim_table_key = Table.TransformColumns(
+    Navigate_second_table, 
+    {
+        {"KEY", 
+        each try Number.FromText(_) otherwise null, 
+        type number}
+    }
+),
