@@ -1,0 +1,28 @@
+// This section is not yet working. Experimenting with using DAX to provide dynamic permissions.
+VAR UserFilter =
+    FILTER ( 'COMBINED_TRAINING', 'MIDP_DIRECTORY'[NETID] = USERPRINCIPALNAME () )
+VAR LocationDescCheck =
+    SELECTCOLUMNS ( UserFilter, "LocationDescCheck", 'COMBINED_TRAINING'[SRC_ID] )
+VAR SectionDescCheck =
+    SELECTCOLUMNS ( UserFilter, "SectionDescCheck", 'COMBINED_TRAINING'[EXTRA_INFO_KEY] )
+RETURN
+    ( "None"
+        IN LocationDescCheck
+            || [NETID] IN SectionDescCheck )
+        && ( "None"
+        IN LocationDescCheck
+            || [NETID] IN SectionDescCheck )
+
+
+
+
+// This worked for filtering the COMBINED_TRAINING table down to unit only
+'COMBINED_TRAINING'[NET_ID] IN 
+    VALUES(MIDP_DIRECTORY[NETID]) 
+    && 
+    LOOKUPVALUE(MIDP_DIRECTORY[HR_DEPARTMENT_LONG], MIDP_DIRECTORY[NETID], USERPRINCIPALNAME()) = 
+    LOOKUPVALUE(MIDP_DIRECTORY[HR_DEPARTMENT_LONG], MIDP_DIRECTORY[NETID], 'COMBINED_TRAINING'[NET_ID])
+
+
+// This works for filtering based on the directory table
+[NETID] == USERPRINCIPALNAME()
