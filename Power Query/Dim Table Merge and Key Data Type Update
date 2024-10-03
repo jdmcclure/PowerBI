@@ -12,3 +12,13 @@ Convert_dim_table_key = Table.TransformColumns(
         type number}
     }
 ),
+
+
+
+Merge_award_closeout = Table.NestedJoin(
+        Removed_other_columns,
+        {"AWARD_ID"},
+        Filtered_award_closeout,
+        {"AWARD_ID"},
+        "MERGED_DATA"
+    ),

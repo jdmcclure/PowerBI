@@ -1,0 +1,22 @@
+// If the field is blank it returns Failed, otherwise it returns succeeded
+Added_flag_column = Table.AddColumn(
+    Previous_step, 
+    "NAME_NEW_COLUMN", 
+    each 
+        if [COLUMN] is null
+        then "Failed" 
+        else "Succeeded",
+    Logical.Type
+)
+
+
+// Comparing 2 columns to see if they match, returning True if they do and false if they do not.
+Added_flag_column = Table.AddColumn(
+        Previous_step, 
+        "NAME_NEW_COLUMN", 
+        each 
+            if [COLUMN1] = [COLUMN2]
+            then "True" 
+            else "False",
+        Logical.Type
+)
