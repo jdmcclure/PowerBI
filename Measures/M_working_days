@@ -1,0 +1,18 @@
+M_count_working_days = 
+IF(
+    OR(
+        HASONEVALUE(Holidays[CountryRegion]),
+        ISEMPTY(Holidays)
+    ),
+    CALCULATE(
+        COUNTROWS('Date'),
+        AND(
+            'Date'[Day of Week Number] <> 1,
+            'Date'[Day of Week Number] <> 7
+        ),
+        EXCEPT(
+            VALUES('Date'[Date]), 
+            VALUES(Holidays[Date])
+        )
+    )
+)
