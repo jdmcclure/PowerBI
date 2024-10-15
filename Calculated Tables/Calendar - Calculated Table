@@ -6,8 +6,8 @@ Calendar =
 
 VAR _calendar =
 CALENDAR(
-        DATE ( YEAR ( MIN ( 'Table'[date_field] ) ), 1, 1 ),
-        DATE ( YEAR ( MAX ( 'Table'[date_field] ) ), 12, 31 )
+        DATE ( YEAR ( MIN ( 'Table'[date_field] ) ), 1, 1 ),  --Modify here
+        DATE ( YEAR ( MAX ( 'Table'[date_field] ) ), 12, 31 ) -- Modify here. everything else will automatically calculate.
     )
 RETURN
 ADDCOLUMNS(
