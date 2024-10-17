@@ -1,4 +1,4 @@
-M_%_change = 
+M_%_change_year_over_year = 
 VAR count_variable = COUNTROWS(Table)
 VAR previous_year = 
     CALCULATE(
@@ -18,11 +18,39 @@ IF(
     FORMAT(PercentageChange, "+0.00%; -0.00%")
 )
 
-
-// ALTERNATIVE
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ALTERNATIVE FORMAT - Replace under the RETURN for this format.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 IF(
         ISBLANK(calc),
+        BLANK(),
+        FORMAT(calc, " ▲ 0.0%; ▼ -0.0%;")
+    )
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+For calculating a period change not restricted to year. Also prevents calculating the entire current
+fiscal year by only calculating to today's date and using the same dates last year.
+
+M_%_period_change = 
+VAR old =
+    CALCULATE(
+        [Measure],
+        SAMEPERIODLASTYEAR('calendar'[Date])
+    )
+VAR new = [Measure]
+VAR calc = DIVIDE( new - old, old, BLANK())
+VAR future =
+    IF(
+        MAX('calendar'[Date]) >= TODAY(), 
+        TRUE(), 
+        FALSE()
+    )
+
+RETURN
+    IF(
+        ISBLANK(calc) || future = TRUE(),
         BLANK(),
         FORMAT(calc, " ▲ 0.0%; ▼ -0.0%;")
     )
