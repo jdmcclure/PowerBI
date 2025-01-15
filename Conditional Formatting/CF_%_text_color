@@ -1,8 +1,9 @@
+Measure_name =
 VAR old =
-CALCULATE(
-    [measure],
-    SAMEPERIODLASTYEAR('Calendar'[Date])
-)
+    CALCULATE(
+        [measure],
+        SAMEPERIODLASTYEAR('Calendar'[Date])
+    )
 VAR new = [measure]
 VAR calc = DIVIDE( new - old, old, BLANK())
 RETURN
