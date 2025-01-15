@@ -2,7 +2,7 @@
 // In this case, the keys data types didn't match so step 2 converts the key 
 // of the dimension table into a number.
 
-Navigate_second_table = Source{[Schema = "colostate_prod", Item = "award_status"]}[Data],
+Navigate_second_table = Source{[Schema = "colostate_prod", Item = "table_name"]}[Data],
 
 Convert_dim_table_key = Table.TransformColumns(
     Navigate_second_table, 
@@ -15,10 +15,17 @@ Convert_dim_table_key = Table.TransformColumns(
 
 
 
-Merge_award_closeout = Table.NestedJoin(
-        Removed_other_columns,
-        {"AWARD_ID"},
-        Filtered_award_closeout,
-        {"AWARD_ID"},
-        "MERGED_DATA"
+Merge_table = Table.NestedJoin(
+        Table_1,
+        {"KEY"},
+        Table_2,
+        {"KEY"},
+        "merged_table"
+    ),
+
+Expanded_status = Table.ExpandTableColumn(
+        Merge_table, 
+        "merged_table", 
+        {"DESCRIPTION"}, 
+        {"NEWNAME"}
     ),
