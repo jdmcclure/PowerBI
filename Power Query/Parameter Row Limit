@@ -1,0 +1,12 @@
+/*
+Use to limit results while developing a query in Power Query (M):
+
+1. Within Power Query go to Manage parameters > New parameter
+2. Name something useful (like "Row_limit") And change to Number type.
+3. Set the value under "Current value" to what you would like to limit the rows to. (i.e. - 100)
+
+This will create a parameter within your Dataflow or Power Query that can be used in any query. Simply
+add the below step after your Table step.
+*/
+
+Limited_rows = Table.FirstN(Table_step_name, Row_limit),
