@@ -1,0 +1,27 @@
+M_is_record_in_slicer_range = 
+/*
+This measure is meant to dynamically flag a record that has active days within a selected
+date range. This is the second measure needed for the M_active_days_in_slicer_range in order to
+pull all of the records within that range regardless of start date (as long as it falls within the 
+records active days)
+*/
+
+// slicer start date is based on the MIN of the calendar table date column
+VAR slicer_start = MIN('calendar_ecrt_projects'[Date])
+
+// slicer end date is based on the MAX of the calendar table date column
+VAR slicer_end = MAX('calendar_ecrt_projects'[Date])
+
+RETURN
+    /* 
+    If the slicer start date is less than or equal to the data table end date AND
+    the slicer end date is greater than or equal to the data table start date return
+    1 else return 0. Filter visual/table to show records where M_is_record_in_slicer_range = 1.
+    */
+
+    IF(
+        slicer_start <= MAX('ecrt_project_status_list'[Period_of_performance_end_date]) &&
+        slicer_end >= MIN('ecrt_project_status_list'[Period_of_performance_start_date]),
+        1,
+        0
+    )

@@ -1,0 +1,53 @@
+M_active_days_in_slicer_range = 
+
+/*
+This measure calculates the number of active days that fall within a 
+selected slicer date range. 
+Records in your data table should have a start date and an end date.
+Link a calendar table to the start date and use the 'Calendar'[Date] column in the slicer.
+*/
+
+// Slicer start date is based on the MIN of the calendar table date column
+VAR slicer_start = MIN('calendar_ecrt_projects'[Date])
+
+//Slicer end date is based on the MAX of the calendar table date column
+VAR slicer_end = MAX('calendar_ecrt_projects'[Date])
+
+/* 
+The overlap start checks to see if the data table start date is greater than the slicer start date,
+if it is it uses the data table start date, if it is not it uses the slicer start date
+*/
+VAR overlap_start = 
+    IF(
+        'ecrt_project_status_list'[M_start_date] > slicer_start,
+        'ecrt_project_status_list'[M_start_date],
+        slicer_start
+    )
+
+/*
+The overlap end checks to see if the data table end date is less than slicer end date,
+if it is it uses the data table end date, if it is not it uses the slicer end date
+*/
+VAR overlap_end = 
+    IF(
+        'ecrt_project_status_list'[M_end_date] < slicer_end,
+        'ecrt_project_status_list'[M_end_date],
+        slicer_end
+    )
+
+RETURN
+    /*
+    If the calculation is being viewed at the project_number (account number) level, it will show the 
+    date difference in days between the overlap start date and the overlap end date.
+    */
+    IF(
+        ISINSCOPE('ecrt_project_status_list'[Project_number]),
+            SUMX(
+                ecrt_project_status_list,
+                DATEDIFF(
+                    overlap_start,
+                    overlap_end,
+                    DAY
+                ) + 1
+            )
+    )

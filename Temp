@@ -1,89 +1,30 @@
-DEFINE 
-  VAR FilteredProposals = 
-    FILTER(
-      'eps_proposal',
-      'eps_proposal'[PROPOSAL_NUMBER] = @ProposalNumber
-    )
+marked_quarters = 
+        let
+            current_date = DateTime.LocalNow(),
+            current_year = Date.Year(current_date),
+            current_month = Date.Month(current_date),
 
-  VAR ResultTable = 
-    SELECTCOLUMNS(
-        SUMMARIZE(
-            FilteredProposals,
-            'eps_proposal'[PROPOSAL_NUMBER],
-            'eps_proposal'[DEADLINE_DATE],
-            'eps_proposal'[DEADLINE_TYPE],
-            'unit'[UNIT_NUMBER],
-            'unit'[UNIT_NAME],
-            'eps_proposal'[PERSONS_ASSOCIATED],
-            'proposal_type'[DESCRIPTION],
-            'proposal_state'[DESCRIPTION],
-            'unit'[SRA],
-            'unit'[OSP_ADMINISTRATOR],
-            'eps_proposal'[PROJECT_START_DATE],
-            'eps_proposal'[PROJECT_END_DATE],
-            'eps_proposal'[SPONSOR_PROPOSAL_NUMBER],
-            'eps_proposal'[AGENCY_ROUTING_IDENTIFIER],
-            'eps_proposal'[DOCUMENT_NUMBER],
-            'eps_proposal'[UPDATE_TIMESTAMP],
-            'eps_proposal'[TITLE],
-            'sponsor'[SPONSOR_NAME],
-            'sponsor_prime'[SPONSOR_NAME],
-            'eps_proposal'[PROGRAM_ANNOUNCEMENT_NUMBER],
-            'eps_proposal'[CREATE_DATE],
-            'eps_proposal'[fa_rate],
-            'eps_proposal'[on_off_campus],
-            'eps_proposal'[INST_PROP_CREATE_DATE],
-            'eps_proposal'[CONTINUED_FROM],
-            'eps_proposal'[IS_HIERARCHY],
-            'activity_type'[DESCRIPTION],
-            'eps_proposal'[ASSOCIATED_AWARDS_AND_ACCOUNTS],
-            'eps_proposal'[ASSOCIATED_NEGOTIATIONS],
-            'eps_proposal'[total_direct_cost],
-            'eps_proposal'[total_indirect_cost],
-            'eps_proposal'[total_cost],
-            'eps_proposal'[INST_PROPOSAL_NUMBER],
-            'eps_proposal'[PROGRAM_ANNOUNCEMENT_TITLE],
-            'eps_proposal'[rate_class],
-            'eps_proposal'[INST_PROP_CREATE_USER],
-            'eps_proposal'[LAST_UPDATED_BY]
-        ),
-        "PROPOSAL_NUMBER", 'eps_proposal'[PROPOSAL_NUMBER],
-        "DEADLINE_DATE", 'eps_proposal'[DEADLINE_DATE],
-        "DEADLINE_TYPE", 'eps_proposal'[DEADLINE_TYPE],
-        "UNIT_NUMBER", 'unit'[UNIT_NUMBER],
-        "UNIT_NAME", 'unit'[UNIT_NAME],
-        "PERSONS_ASSOCIATED", 'eps_proposal'[PERSONS_ASSOCIATED],
-        "PROPOSAL_TYPE", 'proposal_type'[DESCRIPTION],
-        "PROPOSAL_STATE", 'proposal_state'[DESCRIPTION],
-        "SRA", 'unit'[SRA],
-        "OSP_ADMINISTRATOR", 'unit'[OSP_ADMINISTRATOR],
-        "PROJECT_START_DATE", 'eps_proposal'[PROJECT_START_DATE],
-        "PROJECT_END_DATE", 'eps_proposal'[PROJECT_END_DATE],
-        "SPONSOR_PROPOSAL_NUMBER", 'eps_proposal'[SPONSOR_PROPOSAL_NUMBER],
-        "AGENCY_ROUTING_IDENTIFIER", 'eps_proposal'[AGENCY_ROUTING_IDENTIFIER],
-        "DOCUMENT_NUMBER", 'eps_proposal'[DOCUMENT_NUMBER],
-        "UPDATE_TIMESTAMP", 'eps_proposal'[UPDATE_TIMESTAMP],
-        "TITLE", 'eps_proposal'[TITLE],
-        "SPONSOR_NAME", 'sponsor'[SPONSOR_NAME],
-        "SPONSOR_PRIME_NAME", 'sponsor_prime'[SPONSOR_NAME],
-        "PROGRAM_ANNOUNCEMENT_NUMBER", 'eps_proposal'[PROGRAM_ANNOUNCEMENT_NUMBER],
-        "CREATE_DATE", 'eps_proposal'[CREATE_DATE],
-        "FA_RATE", 'eps_proposal'[fa_rate],
-        "ON_OFF_CAMPUS", 'eps_proposal'[on_off_campus],
-        "INST_PROP_CREATE_DATE", 'eps_proposal'[INST_PROP_CREATE_DATE],
-        "CONTINUED_FROM", 'eps_proposal'[CONTINUED_FROM],
-        "IS_HIERARCHY", 'eps_proposal'[IS_HIERARCHY],
-        "ACTIVITY_TYPE", 'activity_type'[DESCRIPTION],
-        "ASSOCIATED_AWARDS_AND_ACCOUNTS", 'eps_proposal'[ASSOCIATED_AWARDS_AND_ACCOUNTS],
-        "ASSOCIATED_NEGOTIATIONS", 'eps_proposal'[ASSOCIATED_NEGOTIATIONS],
-        "TOTAL_DIRECT_COST", 'eps_proposal'[total_direct_cost],
-        "TOTAL_INDIRECT_COST", 'eps_proposal'[total_indirect_cost],
-        "TOTAL_COST", 'eps_proposal'[total_cost],
-        "INST_PROPOSAL_NUMBER", 'eps_proposal'[INST_PROPOSAL_NUMBER],
-        "PROGRAM_ANNOUNCEMENT_TITLE", 'eps_proposal'[PROGRAM_ANNOUNCEMENT_TITLE],
-        "RATE_CLASS", 'eps_proposal'[rate_class],
-        "INST_PROP_CREATE_USER", 'eps_proposal'[INST_PROP_CREATE_USER],
-        "LAST_UPDATED_BY", 'eps_proposal'[LAST_UPDATED_BY]
-        )
+            // Determine the current fiscal year and quarter
+            current_fiscal_year = if current_month >= 7 then current_year + 1 else current_year,
+            current_fy_quarter_num = 
+                if current_month >= 7 and current_month <= 9 then 1
+                else if current_month >= 10 and current_month <= 12 then 2
+                else if current_month >= 1 and current_month <= 3 then 3
+                else 4,
 
-EVALUATE ResultTable
+            // Calculate fiscal quarter and fiscal year for 3 quarters ago
+            target_fy_quarter_num = Number.Mod(current_fy_quarter_num - 3 + 4, 4),
+            adjusted_target_fy_quarter_num = if target_fy_quarter_num = 0 then 4 else target_fy_quarter_num,
+            target_fiscal_year = 
+                if current_fy_quarter_num <= 3 then current_fiscal_year - 1
+                else current_fiscal_year,
+
+            // Mark the target rows
+            result = Table.AddColumn(
+                FY_quarter_num, 
+                "Is Target Quarter", 
+                each if [FY Quarter Num] = adjusted_target_fy_quarter_num and [FY Year] = target_fiscal_year then "Current" else null, 
+                Text.Type
+            )
+        in
+            result,
