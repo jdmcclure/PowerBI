@@ -7,6 +7,7 @@ Here is my current filter highlighter:
 
 -------------------------------------------------------------------
 is_anything_selected = 
+// Returns "Filtered" if any of the below columns are filtered
 IF(
     ISFILTERED('CADDim'[location_type]) || 
     ISFILTERED('CADDim'[origin]) || 
@@ -15,8 +16,8 @@ IF(
     ISFILTERED('Calendar'[semester]) ||
     ISFILTERED('Calendar'[year]) ||
     ISFILTERED('Calendar'[Date]),
-    "Yes",
-    "No"
+    "Filtered",
+    "Not Filtered"
 )
 --------------------------------------------------------------------
 
@@ -53,3 +54,23 @@ IF (
     )
 )
 ---------------------------------------------------------------------
+
+More universal use:
+/*
+Checks to see if the referenced column is being filtered.
+Returns a table (VALUES) of the distinct values of the referenced column.
+Iterates (CONCATENATEX) over the table of selected values and concatenates
+them into a single string.
+If nothing selected, returns "All" meaning no filter.
+*/
+
+CF_column_filter = 
+IF(
+    ISFILTERED('table'[column]),
+    CONCATENATEX(
+        VALUES('table'[column]),
+        'table'[column],
+        "; "
+    ),
+    "All"
+)
