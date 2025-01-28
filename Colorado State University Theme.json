@@ -26,13 +26,13 @@
       "label":
          {
          "color":"#59595B",
-         "fontSize":12,
+         "fontSize":14,
          "fontFace": "Segoe UI"
          },
       "title":
          {
          "color":"#59595B",
-         "fontSize":14,
+         "fontSize":16,
          "fontFace": "Segoe UI Semibold"
          },
       "header":
@@ -64,12 +64,12 @@
                {
                "$id":"Applied",
                "foregroundColor":{"solid":{"color":"#59595B"}},
-               "textSize":11
+               "textSize":14
                },
                {
                "$id":"Available",
                "foregroundColor":{"solid":{"color":"#59595B"}},
-               "textSize":11
+               "textSize":14
                }
             ],
             "padding":[
@@ -135,7 +135,7 @@
                ],
                "labels": [
                   {
-                  "fontSize": 28
+                  "fontSize": 32
                   }
                ]
          }
@@ -153,7 +153,7 @@
                "urlIcon": true,
                "wordWrap": true,
                "fontFamily": "Segoe UI",
-               "fontSize": 11
+               "fontSize": 12
                }
             ],
             "columnHeaders": [
@@ -241,7 +241,7 @@
             "text": [
                {
                   "fontFamily": "Segoe UI",
-                  "fontSize": 12,
+                  "fontSize": 14,
                   "color": {"solid": {"color": "#666666"}}
                }
             ],
@@ -254,7 +254,7 @@
             "title": [
                {
                   "fontFamily": "Segoe UI Semibold",
-                  "fontSize": 14,
+                  "fontSize": 18,
                   "fontColor": {"solid": {"color": "#666666"}}
                }
             ]
