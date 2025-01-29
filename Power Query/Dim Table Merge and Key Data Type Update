@@ -13,9 +13,9 @@ Convert_dim_table_key = Table.TransformColumns(
     }
 ),
 
+//
 
-
-Merge_table = Table.NestedJoin(
+Merged_table = Table.NestedJoin(
         Table_1,
         {"KEY"},
         Table_2,
@@ -24,7 +24,7 @@ Merge_table = Table.NestedJoin(
     ),
 
 Expanded_status = Table.ExpandTableColumn(
-        Merge_table, 
+        Merged_table, 
         "merged_table", 
         {"DESCRIPTION"}, 
         {"NEWNAME"}

@@ -1,6 +1,8 @@
-// Create a dynamic calendar table using a calculated table (processed at the time of refresh).
-// Update the first VAR (_calendar) with the proper table and date field names. Modify the 
-// beginning dates as needed. i.e. - change to ", 7, 1 )" if you would like it to start July 1 instead of Jan 1.
+/* 
+Create a dynamic calendar table using a calculated table (processed at the time of refresh).
+Update the first VAR (_calendar) with the proper table and date field names. Modify the 
+beginning dates as needed. i.e. - change to ", 7, 1 )" if you would like it to start July 1 instead of Jan 1.
+*/
 
 Calendar = 
 
