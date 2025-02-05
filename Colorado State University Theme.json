@@ -1,6 +1,6 @@
 ﻿{
    "name":"Colorado State University Theme",
-   "$schema":"https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/Report%20Theme%20JSON%20Schema/reportThemeSchema-2.126.json",
+   "$schema":"https://raw.githubusercontent.com/microsoft/powerbi-desktop-samples/main/Report%20Theme%20JSON%20Schema/reportThemeSchema-2.139.json",
    "dataColors":
       [
       "#1E4D2B",
@@ -16,7 +16,7 @@
       "#12A4B6",
       "#ECC530"
       ],
-   "background":"#F0F4F9",
+   "background":"#FFFFFF",
    "tableAccent":"#1E4D2B",
    "minimum": "#A5CBD8",
    "maximum": "#0F3F4F",
@@ -95,6 +95,20 @@
                {
                   "color":{"solid":{"color":"#FFFFFF"}},
                   "transparency":0
+               }
+            ],
+            "pageSize": [
+               {
+                  "pageSizeTypes": "Custom",
+                  "pageSizeHeight": 980,
+                  "pageSizeWidth": 2000
+               }
+            ],
+            "filterCard": [
+               {
+                  "backgroundColor":{"solid": {"color":"#E9E7C7"}},
+                  "borderColor": {"solid": {"color": "#C8C372"}},
+                  "border": true
                }
             ]
          }
@@ -247,7 +261,7 @@
             ],
             "background": [
                {
-                  "color": {"solid": {"color": "#F0F9F9"}},
+                  "color": {"solid": {"color": "#F0F4F9"}},
                   "transparency": 0
                }
             ],
@@ -256,6 +270,99 @@
                   "fontFamily": "Segoe UI Semibold",
                   "fontSize": 18,
                   "fontColor": {"solid": {"color": "#666666"}}
+               }
+            ]
+         }
+      },
+      "pivotTable": {
+         "*": {
+            "stylePreset": [
+               {
+                  "stylePreset": "Minimal"
+               }
+            ],
+            "grid": [
+               {
+                  "gridVertical": true,
+                  "gridVerticalColor": {"solid": {"color": "#D8D8DF"}},
+                  "gridVerticalWeight": 2,
+                  "gridHorizontal": true,
+                  "gridHorizontalColor": {"solid": {"color": "#D8D8DF"}},
+                  "gridHorizontalWeight": 2,
+                  "rowPadding": 3,
+                  "outlineWeight": 1,
+                  "outlineColor": {"solid": {"color": "#1E4D2B"}},
+                  "textSize": 12
+               }
+            ],
+            "columnHeaders": [
+               {
+                  "fontColor": {"solid": {"color": "#252423"}},
+                  "backColor": {"solid": {"color": "#D9DFD9"}},
+                  "alignment": "Center",
+                  "titleAlignment": "Center",
+                  "autoSizeColumnWidth": false,
+                  "wordWrap": true,
+                  "fontFamily": "Segoe UI Semibold",
+                  "fontSize": 13
+               }
+            ],
+            "rowHeaders": [
+               {
+                  "fontColor": {"solid": {"color": "#252423"}},
+                  "backColor": {"solid": {"color": "#F0F4F9"}},
+                  "alignment": "Left",
+                  "autoSizeColumnWidth": false,
+                  "urlIcon": false,
+                  "wordWrap": true,
+                  "fontFamily": "Segoe UI Semibold",
+                  "fontSize": 12
+               }
+            ],
+            "border": [
+               {
+                  "show": true,
+                  "color": {"solid": {"color": "#F0F4F9"}},
+                  "radius": 10
+               }
+            ],
+            "values": [
+               {
+                  "fontColorPrimary": {"solid": {"color": "#252423"}},
+                  "fontColorSecondary": {"solid": {"color": "#252423"}},
+                  "backColorPrimary": {"solid": {"color": "#F0F4F9"}},
+                  "backColorSecondary": {"solid": {"color": "#FFFFFF"}},
+                  "wordWrap": true,
+                  "fontFamily": "Segoe UI",
+                  "fontSize": 12,
+                  "valuesOnRow": true
+               }
+            ],
+            "subTotals": [
+               {
+                  "fontFamily": "Segoe UI",
+                  "fontSize": 12,
+                  "fontColor": {"solid": {"color": "#252423"}},
+                  "rowSubtotalsLabel": "Total",
+                  "rowSubtotalsPosition": "Bottom",
+                  "perRowLevel": false
+               }
+            ],
+            "rowTotal": [
+               {
+                  "fontFamily": "Segoe UI",
+                  "fontSize": 12,
+                  "fontColor": {"solid": {"color": "#252423"}},
+                  "backColor": {"solid": {"color": "#A5B8AA"}}
+
+               }
+            ],
+            "columnTotal": [
+               {
+                  "fontFamily": "Segoe UI",
+                  "fontSize": 12,
+                  "fontColor": {"solid": {"color": "#252423"}},
+                  "backColor": {"solid": {"color": "#A5B8AA"}}
                }
             ]
          }
