@@ -1,0 +1,20 @@
+-- Test virtual tables before adding them to DAX queries.
+
+EVALUATE
+    ADDCOLUMNS(
+        SUMMARIZE(
+            'award',
+            'award'[AWARD_NUMBER_ROOT],
+            'award'[AWARD_NUMBER]
+        ),
+        "ACTIVE_COUNT", 
+            CALCULATE(
+                COUNTROWS('award'),
+                FILTER(
+                    'award',
+                    'award'[AWARD_STATUS] = "Active" &&
+                    'award'[AWARD_NUMBER_ROOT] = EARLIER('award'[AWARD_NUMBER_ROOT])
+                )
+            ),
+        "IS_PARENT", IF(RIGHT('award'[AWARD_NUMBER], 6) = "-00001", TRUE(), FALSE())
+    )

@@ -1,0 +1,7 @@
+-- Filter to view specific records in DAX Query View
+
+EVALUATE
+	FILTER(
+		'award',
+		'award'[AWARD_NUMBER_ROOT] = "005633"
+	)
