@@ -5,3 +5,14 @@ EVALUATE
 		'award',
 		'award'[AWARD_NUMBER_ROOT] = "005633"
 	)
+
+
+-- Create a summarization on a filtered virtual table, in this case records that start with "A".
+EVALUATE
+	CALCULATE(
+		SUM('Table'[Amount])
+		,FILTER(
+			'Table'
+			,LEFT('Table'[Item],1) = "A"
+		)
+	)
