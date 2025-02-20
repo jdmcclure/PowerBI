@@ -1,0 +1,11 @@
+Filtered_rows = Table.SelectRows(
+    Previous_step, 
+    each 
+        not Text.StartsWith([CS_ACCOUNT_NBR], "0000") 
+        and 
+        [KFS_ACCOUNT_NBR] = null 
+        and 
+        Date.From([AWARD_UPDATE_TIMESTAMP]) >= Date.From(DateTime.LocalNow()) - Duration.From(30)
+        and
+        List.Contains({"ENROUTE", "DISAPPROVED"}, [KREW_STATUS])
+)
