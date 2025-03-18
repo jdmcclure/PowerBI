@@ -16,3 +16,17 @@ EVALUATE
 			,LEFT('Table'[Item],1) = "A"
 		)
 	)
+
+
+-- Use SUMMARIZECOLUMNS if you don't want to summarize by a specific column
+EVALUATE
+SUMMARIZE(
+	CALCULATETABLE(
+		'eps_proposal',
+		'calendar_deadline'[fiscal_year] = 2024 || 'calendar_deadline'[fiscal_year] = 2025,
+		'eps_proposal'[DEADLINE_TYPE] <> "A",
+		NOT(ISBLANK('eps_proposal'[DEADLINE_TYPE]))
+	),
+	'calendar_deadline'[fiscal_year],
+	"Count", [M_proposal_count]
+)

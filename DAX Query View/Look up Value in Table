@@ -1,0 +1,33 @@
+EVALUATE
+	FILTER(
+		'award',
+		'award'[AWARD_NUMBER_ROOT] = "000028"
+	)
+
+
+//
+For if you have 2 variables you want to change between
+//
+
+DEFINE
+// Place 0 in variable not being searched. 
+VAR proposal_number = 135103
+VAR document_number = 0
+
+// DO NOT MODIFY ANYTHING BELOW THIS LINE // 
+VAR converted_proposal_number = FORMAT(proposal_number, "0")
+VAR converted_document_number = FORMAT(document_number, "0")
+
+EVALUATE
+    FILTER(
+		'eps_proposal',
+		IF(
+			document_number = 0,
+			'eps_proposal'[PROPOSAL_NUMBER] = converted_proposal_number,
+			IF(
+				proposal_number = 0,
+				'eps_proposal'[DOCUMENT_NUMBER] = converted_document_number,
+				"Error"
+			)
+		)
+	)

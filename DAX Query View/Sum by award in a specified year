@@ -1,0 +1,13 @@
+EVALUATE
+TOPN(
+    100,
+    SUMMARIZE(
+        CALCULATETABLE(
+            'award',
+            'calendar_award_start_date'[fiscal_year] = 2020
+        ),
+        'award'[AWARD_NUMBER_ROOT],
+        "Obligated", 'award'[M_award_obligated_amount_total]
+    ),
+    [Obligated], DESC
+)
