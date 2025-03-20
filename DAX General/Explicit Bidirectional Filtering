@@ -1,0 +1,8 @@
+/*
+
+*/
+
+CALCULATE(
+    [M_measure],
+    CROSSFILTER('Table'[Key], 'Table2'[Key], BOTH)
+)
