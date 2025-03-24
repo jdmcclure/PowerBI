@@ -1,0 +1,28 @@
+CC_days_in_negotiation = 
+// This calculated column is meant to count the number of days a negotiation is in progress
+// If there is an end date, it calculates the number of days from start to end dates instead.
+VAR _in_progress = 
+    IF(
+        ISBLANK(negotiation[NEGOTIATION_END_DATE]),
+        "True",
+        "False"
+    )
+VAR _calc =
+    DATEDIFF(
+        negotiation[NEGOTIATION_START_DATE],
+        TODAY(),
+        DAY
+    )
+VAR _days = 
+    DATEDIFF(
+        negotiation[NEGOTIATION_START_DATE],
+        negotiation[NEGOTIATION_END_DATE],
+        DAY
+    )
+
+RETURN
+IF(
+    _in_progress = "True",
+    _calc,
+    _days
+)
