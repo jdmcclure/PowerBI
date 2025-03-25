@@ -1,0 +1,21 @@
+/*
+https://www.sqlbi.com/articles/introducing-window-functions-in-dax/ 
+*/
+
+EVALUATE
+VAR BrandsAndSalesByCategory =
+    ADDCOLUMNS (
+        ALL (
+            'Product'[Category],
+            'Product'[Brand]
+        ),
+        "@Sales", [Sales Amount]
+    )
+RETURN
+    INDEX (
+        1,
+        BrandsAndSalesByCategory,
+        ORDERBY ( [@Sales], DESC ),
+        KEEP,
+        PARTITIONBY ( 'Product'[Category] )
+    )
