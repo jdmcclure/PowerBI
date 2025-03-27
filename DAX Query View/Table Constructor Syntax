@@ -1,0 +1,47 @@
+/*
+Source: https://www.sqlbi.com/articles/using-tuple-syntax-in-dax-expressions/
+
+The DAX language has a table constructor syntax to create an unnamed table in a DAX expression. 
+This syntax is helpful when you need a temporary table with a small number of rows in a DAX 
+expression or when you want to create a calculated table with constant and calculated values.
+
+The more common use case for a table constructor is with the IN operator:
+*/
+EVALUATE
+CALCULATETABLE (
+    'Product',
+    'Product'[Color] IN { "Red", "Blue", "White" }
+)
+
+
+
+/*
+The previous example uses a table constructor that returns one column and three rows. 
+However, the table constructor can have two or more columns for each row, as in the following example:
+*/
+EVALUATE
+CALCULATETABLE (
+    'Product',
+    ( 'Product'[Color], 'Product'[Brand] )
+        IN { ( "Red", "Contoso" ), ( "Blue", "Litware" ) }
+)
+
+
+
+/*
+Suppose you need a small table with constant values. 
+In that case, the calculated table with the table constructor is an alternative to the “Enter data” 
+feature in Power BI, which generates a Power Query script with constant values:
+*/
+Price Range =
+SELECTCOLUMNS (
+    {
+        ( 1, "LOW", 0, 100 ),
+        ( 2, "MEDIUM", 100, 500 ),
+        ( 3, "HIGH", 500, 9999999 )
+    },
+    "PriceRangeKey", [Value1],
+    "Price Range", [Value2],
+    "Min", [Value3],
+    "Max", [Value4]
+)
