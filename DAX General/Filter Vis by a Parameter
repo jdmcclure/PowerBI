@@ -1,0 +1,14 @@
+/*
+Place this measure in the filter pane of a visual to filter it by a parameter.
+*/
+
+M_filtered_negotiations =
+
+VAR selected_value = SELECTEDVALUE('(param) Negotiation Age'[Negotiation Age]) 
+
+RETURN 
+    IF(
+        MAX('negotiation'[DAYS_IN_NEGOTIATION]) > selected_value, 
+        1, 
+        0
+    )

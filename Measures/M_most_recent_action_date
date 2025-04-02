@@ -1,0 +1,33 @@
+/*
+    This measure is used to find the most recent activity type from the 'negotiation_activity' table.
+    It is designed to be used in a report or dashboard where the context of the negotiation ID is important.
+
+    A negotiation can have many activities, and this measure will return the most recent activity type.
+
+    ISINSCOPE limits the measure to return a value only when the negotiation ID is in the current context,
+    preventing it from returning a value when the context is at a higher level (such as totals).
+*/
+
+M_most_recent_action_type = 
+VAR latest_activity = 
+    TOPN(
+        1,
+        'negotiation_activity',
+        'negotiation_activity'[START_DATE],
+        DESC
+    )
+VAR result = 
+    MAXX(
+        latest_activity,
+        'negotiation_activity'[NEGOTIATION_ACTIVITY_TYPE]
+    )
+RETURN
+    IF(
+        ISBLANK(result),
+        BLANK(),
+        IF(
+            ISINSCOPE('negotiation'[NEGOTIATION_ID]),
+            result,
+            BLANK()
+        )
+    )
