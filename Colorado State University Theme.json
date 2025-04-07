@@ -93,11 +93,6 @@
                   "textSize": 9,
                   "fontFamily": "Segoe UI",
                   "border": false,
-                  "borderColor": {
-                        "solid": {
-                           "color": "#1E4D2B"
-                        }
-                  },
                   "inputBoxColor": {
                         "solid": {
                            "color": "#FFFFFF"
@@ -119,11 +114,6 @@
                   "textSize": 9,
                   "fontFamily": "Segoe UI",
                   "border": false,
-                  "borderColor": {
-                        "solid": {
-                           "color": "#123456"
-                        }
-                  },
                   "inputBoxColor": {
                         "solid": {
                            "color": "#FFFFFF"
