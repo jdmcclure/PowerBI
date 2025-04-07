@@ -54,30 +54,89 @@
                "foreground":{"solid":{"color":"#1E4D2B"}}
                }
             ],
-            "outspacePane":[
-               {
-               "foregroundColor":{"solid":{"color":"#1E4D2B"}},
-               "checkboxAndApplyColor":{"solid":{"color":"#9FAFA1"}}
+            "outspacePane": [{
+                  "backgroundColor": {
+                        "solid": {
+                           "color": "#9FAFA1"
+                        }
+                  },
+                  "foregroundColor": {
+                        "solid": {
+                           "color": "#59595B"
+                        }
+                  },
+                  "transparency": 0,
+                  "titleSize": 12,
+                  "headerSize": 10,
+                  "fontFamily": "Segoe UI",
+                  "border": true,
+                  "borderColor": {
+                        "solid": {
+                           "color": "#1E4D2B"
+                        }
+                  }
                }
-            ],
-            "filterCard":[
-               {
-               "$id":"Applied",
-               "foregroundColor":{"solid":{"color":"#59595B"}},
-               "textSize":14
-               },
-               {
-               "$id":"Available",
-               "foregroundColor":{"solid":{"color":"#59595B"}},
-               "textSize":14
+            ], 
+            "filterCard": [{
+                  "$id": "Applied",
+                  "transparency": 0,
+                  "backgroundColor": {
+                        "solid": {
+                           "color": "#F0F4F9"
+                        }
+                  },
+                  "foregroundColor": {
+                        "solid": {
+                           "color": "#59595B"
+                        }
+                  },
+                  "textSize": 9,
+                  "fontFamily": "Segoe UI",
+                  "border": false,
+                  "borderColor": {
+                        "solid": {
+                           "color": "#1E4D2B"
+                        }
+                  },
+                  "inputBoxColor": {
+                        "solid": {
+                           "color": "#FFFFFF"
+                        }
+                  }
+               }, {
+                  "$id": "Available",
+                  "transparency": 0,
+                  "backgroundColor": {
+                        "solid": {
+                           "color": "#F0F4F9"
+                        }
+                  },
+                  "foregroundColor": {
+                        "solid": {
+                           "color": "#59595B"
+                        }
+                  },
+                  "textSize": 9,
+                  "fontFamily": "Segoe UI",
+                  "border": false,
+                  "borderColor": {
+                        "solid": {
+                           "color": "#123456"
+                        }
+                  },
+                  "inputBoxColor": {
+                        "solid": {
+                           "color": "#FFFFFF"
+                        }
+                  }
                }
             ],
             "padding":[
                {
-               "bottom": 5,
-               "top": 5,
-               "left": 5,
-               "right": 5
+                  "bottom": 5,
+                  "top": 5,
+                  "left": 5,
+                  "right": 5
                }
             ],
             "border": [
