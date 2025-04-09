@@ -1,0 +1,31 @@
+Current_Calendar_Quarter = 
+VAR today_date = TODAY()
+VAR today_month = MONTH(today_date)
+VAR today_day = DAY(today_date)
+VAR today_quarter =
+    SWITCH(
+        TRUE(),
+        today_month IN {1, 2, 3}, 1,
+        today_month IN {4, 5, 6}, 2,
+        today_month IN {7, 8, 9}, 3,
+        today_month IN {10, 11, 12}, 4
+    )
+VAR row_month = MONTH('calendar_negotiation'[Date])
+VAR row_day = DAY('calendar_negotiation'[Date])
+VAR row_quarter =
+    SWITCH(
+        TRUE(),
+        row_month IN {1, 2, 3}, 1,
+        row_month IN {4, 5, 6}, 2,
+        row_month IN {7, 8, 9}, 3,
+        row_month IN {10, 11, 12}, 4
+    )
+VAR is_in_current_quarter = row_quarter = today_quarter
+VAR is_date_up_to_today =
+    row_month < today_month
+    || (
+        row_month = today_month
+        && row_day <= today_day
+    )
+RETURN
+    is_in_current_quarter && is_date_up_to_today
