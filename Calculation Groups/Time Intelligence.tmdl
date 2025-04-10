@@ -1,0 +1,165 @@
+createOrReplace
+
+	table 'Negotiation Time Intelligence'
+		lineageTag: a8cc618f-b1ee-468d-99a4-452ca8d9c681
+
+		calculationGroup
+
+			calculationItem All = SELECTEDMEASURE()
+
+			calculationItem 'Current Month' = ```
+					
+					VAR _filtered_dates = 
+					    FILTER(
+							SUMMARIZECOLUMNS(
+								'calendar_negotiation'[Date],
+								'calendar_negotiation'[CY_Month_Year],
+								'calendar_negotiation'[FY_Month_Year],
+								'calendar_negotiation'[CY_Year],
+								'calendar_negotiation'[FY_Year],
+								'calendar_negotiation'[CY_Quarter_Year],
+								'calendar_negotiation'[FY_Quarter_Year]
+							),
+							MONTH('calendar_negotiation'[Date]) = MONTH(TODAY()) &&
+					        DAY('calendar_negotiation'[Date]) < DAY(TODAY()) &&
+					        YEAR('calendar_negotiation'[Date]) <= YEAR(TODAY())
+						)
+					
+					RETURN
+					    CALCULATE(
+					        SELECTEDMEASURE(),
+					        _filtered_dates
+					    )
+					```
+
+			calculationItem 'Current Quarter' = ```
+					
+					VAR today = TODAY()
+					VAR today_month = MONTH(today)
+					VAR today_day = DAY(today) - 1
+					
+					-- Get the current calendar quarter number
+					VAR current_quarter = 
+					    CALCULATE(
+					        MAX('calendar_negotiation'[CY_Quarter]),
+					        FILTER(
+					            ALL('calendar_negotiation'),
+					            'calendar_negotiation'[Date] = today
+					        )
+					    )
+					
+					-- Build filtered virtual table
+					VAR _filtered_dates = 
+					    FILTER(
+					        SUMMARIZECOLUMNS(
+					            'calendar_negotiation'[Date],
+					            'calendar_negotiation'[CY_Month_Year],
+					            'calendar_negotiation'[FY_Month_Year],
+					            'calendar_negotiation'[CY_Year],
+					            'calendar_negotiation'[FY_Year],
+					            'calendar_negotiation'[CY_Quarter_Year],
+					            'calendar_negotiation'[FY_Quarter_Year],
+					            'calendar_negotiation'[CY_Quarter]
+					        ),
+					        'calendar_negotiation'[CY_Quarter] = current_quarter &&
+					        (
+					            MONTH('calendar_negotiation'[Date]) < today_month ||
+					            (
+					                MONTH('calendar_negotiation'[Date]) = today_month &&
+					                DAY('calendar_negotiation'[Date]) <= today_day
+					            )
+					        )
+					    )
+					
+					RETURN
+					    CALCULATE(
+					        SELECTEDMEASURE(),
+					        _filtered_dates
+					    )
+					
+					/*
+					CALCULATE(
+					    SELECTEDMEASURE(),
+					    'calendar_negotiation'[Current_Calendar_Quarter] = TRUE()
+					)
+					*/
+					```
+
+			calculationItem 'Calendar Year-to-Date' = ```
+					
+					CALCULATE(
+					    SELECTEDMEASURE(), 
+					    MONTH('calendar_negotiation'[Date]) <= MONTH(TODAY()) && 
+					    DAY('calendar_negotiation'[Date]) < DAY(TODAY()) &&
+					    YEAR('calendar_negotiation'[Date]) = MAX('calendar_negotiation'[CY_Year])
+					)
+					```
+
+			calculationItem 'Fiscal Year-to-Date' = ```
+					
+					VAR MaxDate = 
+					    DATE(
+					        YEAR(MAX('calendar_negotiation'[Date])),
+					        MONTH(TODAY()),
+					        DAY(TODAY()-1)
+					    )
+					VAR StartDate =
+					    IF(
+					        MONTH(MaxDate) >= 7,
+					        DATE(YEAR(MaxDate), 7, 1),
+					        DATE(YEAR(MaxDate) - 1, 7, 1)
+					    )
+					RETURN
+					CALCULATE(
+					    SELECTEDMEASURE(),
+					    DATESBETWEEN('calendar_negotiation'[Date], StartDate, MaxDate)
+					)
+					```
+
+		/// Displays the maximum value from the 'Show as' column in the 'Negotiation Time Intelligence' table to be used a title.
+		/// 
+		/// CF_time_intelligence_title = MAX('Negotiation Time Intelligence'[Show as])
+		measure CF_time_intelligence_title = MAX('Negotiation Time Intelligence'[Show as]) & " Negotiations by " & MAX('(param) Negotiation Date Parameters'[Negotiation Date Parameters])
+			lineageTag: 923d0763-5615-4738-b20c-b81e0c5aa9cb
+
+		/// Generates a dynamic label based on the selected time intelligence period, such as month, quarter, or year, using the 'Show as' field.
+		/// 
+		/// CF_time_intelligence_label =
+		/// SWITCH(
+		/// TRUE(),
+		/// SELECTEDVALUE('Negotiation Time Intelligence'[Show as]) = "All", "All",
+		/// SELECTEDVALUE('Negotiation Time Intelligence'[Show as]) = "Current Month", MAX('calendar_negotiation'[CY_Month]) & " " & MAX('calendar_negotiation'[CY_Year]),
+		/// SELECTEDVALUE('Negotiation Time Intelligence'[Show as]) = "Current Quarter", "CY " & MAX('calendar_negotiation'[CY_Quarter_Year]) & " / " & "FY " & MAX('calendar_negotiation'[FY_Quarter_Year]),
+		/// SELECTEDVALUE('Negotiation Time Intelligence'[Show as]) = "Calendar Year-to-Date", "CY " & FORMAT(MAX('calendar_negotiation'[CY_Year]), "####"),
+		/// SELECTEDVALUE('Negotiation Time Intelligence'[Show as]) = "Fiscal Year-to-Date", "FY " & FORMAT(MAX('calendar_negotiation'[FY_Year]), "####")
+		/// )
+		measure CF_time_intelligence_label =
+				
+				SWITCH(
+				    TRUE(),
+				    SELECTEDVALUE('Negotiation Time Intelligence'[Show as]) = "All", "All",
+				    SELECTEDVALUE('Negotiation Time Intelligence'[Show as]) = "Current Month", MAX('calendar_negotiation'[CY_Month]) & " " & MAX('calendar_negotiation'[CY_Year]),
+				    SELECTEDVALUE('Negotiation Time Intelligence'[Show as]) = "Current Quarter", "CY " & MAX('calendar_negotiation'[CY_Quarter_Year]) & " / " & "FY " & MAX('calendar_negotiation'[FY_Quarter_Year]),
+				    SELECTEDVALUE('Negotiation Time Intelligence'[Show as]) = "Calendar Year-to-Date", "CY " & FORMAT(MAX('calendar_negotiation'[CY_Year]), "####"),
+				    SELECTEDVALUE('Negotiation Time Intelligence'[Show as]) = "Fiscal Year-to-Date", "FY " & FORMAT(MAX('calendar_negotiation'[FY_Year]), "####")
+				)
+			lineageTag: 4c0cfd3b-a62c-474a-a766-a925a052b288
+
+		column 'Show as'
+			dataType: string
+			lineageTag: e6ee7e9b-1505-426a-acda-337966c87be8
+			summarizeBy: none
+			sourceColumn: Name
+			sortByColumn: Ordinal
+
+			annotation SummarizationSetBy = Automatic
+
+		column Ordinal
+			dataType: int64
+			formatString: 0
+			lineageTag: e776f9ca-d824-45ec-ab09-4a26ba105126
+			summarizeBy: none
+			sourceColumn: Ordinal
+
+			annotation SummarizationSetBy = User
+
