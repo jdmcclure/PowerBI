@@ -38,7 +38,6 @@ createOrReplace
 					VAR today_month = MONTH(today)
 					VAR today_day = DAY(today) - 1
 					
-					-- Get the current calendar quarter number
 					VAR current_quarter = 
 					    CALCULATE(
 					        MAX('calendar_negotiation'[CY_Quarter]),
@@ -48,7 +47,6 @@ createOrReplace
 					        )
 					    )
 					
-					-- Build filtered virtual table
 					VAR _filtered_dates = 
 					    FILTER(
 					        SUMMARIZECOLUMNS(
