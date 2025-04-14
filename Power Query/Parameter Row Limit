@@ -10,3 +10,16 @@ add the below step after your Table step.
 */
 
 Limited_rows = Table.FirstN(Table_step_name, Row_limit),
+
+
+
+// Another version
+
+Filter_toggle = if DB_filter_toggle = 1 then last_query_step else filtered_row_step
+
+// Example
+DB_filter_toggle = 1
+
+Removed_columns = Table.RemoveColumns(last_step, {"Column1", "Columns2", "Column3"}),
+Filtered_rows = Table.SelectRows(Removed_columns, Row_limit)
+Filter_toggle = if DB_filter_toggle = 1 then Removed_columns else Filter_rows
