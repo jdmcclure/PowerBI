@@ -82,12 +82,12 @@
                   "transparency": 0,
                   "backgroundColor": {
                         "solid": {
-                           "color": "#F0F4F9"
+                           "color": "#F0C9AB"
                         }
                   },
                   "foregroundColor": {
                         "solid": {
-                           "color": "#59595B"
+                           "color": "#d9782d"
                         }
                   },
                   "textSize": 9,
