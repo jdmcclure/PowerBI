@@ -87,12 +87,17 @@
                   },
                   "foregroundColor": {
                         "solid": {
-                           "color": "#d9782d"
+                           "color": "#59595B"
                         }
                   },
                   "textSize": 9,
                   "fontFamily": "Segoe UI",
-                  "border": false,
+                  "border": true,
+                  "borderColor": {
+                     "solid": {
+                        "color": "#D9782D"
+                     }
+                  },
                   "inputBoxColor": {
                         "solid": {
                            "color": "#FFFFFF"
