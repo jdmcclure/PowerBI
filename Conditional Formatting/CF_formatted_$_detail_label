@@ -1,0 +1,13 @@
+CF_detail_label = 
+VAR _amount = ABS([M_award_obligated_amount_total])  
+VAR _level = IF(_amount = 0, 0, INT(LOG10(_amount)))  
+VAR _divider = SWITCH(TRUE(), _level >= 9 , 10^9, _level >= 6, 10^6, _level >= 3, 10^3, 1 )
+VAR _format = SWITCH(TRUE(), _level >= 9, "0.00" , _level >= 6, "0.0", _level >= 3, "0", "0")
+VAR _unit = SWITCH(TRUE(), _level >= 9, "bn" , _level >= 6, "M", _level >= 3, "K", "")
+
+RETURN
+SWITCH(
+    SELECTEDVALUE('(param) Award Summary Selection'[Award Summary Selection Order]),  
+    0, FORMAT([M_award_count], "#,##0"),
+    1, "$" & FORMAT([M_award_obligated_amount_total] / _divider , _format ) & _unit
+)

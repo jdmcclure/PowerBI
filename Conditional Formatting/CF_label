@@ -9,3 +9,19 @@ CF_direct_label = "Direct:  $" & FORMAT ( ROUND ([Measure], 2 ), "0,0.00" )
 
 CF_award_groups_count_title = 
 "Count by " & MAX('(param) Award Groups'[(param) Award Groups])
+
+
+
+-------------------------------------
+
+// Another version that changes based on selected value
+
+CF_award_summary_title = 
+VAR _count = "Award Count by Fiscal Year Started"
+VAR _obligated = "Obligated Amount by Fiscal Year started" 
+RETURN
+    SWITCH(
+    SELECTEDVALUE('(param) Award Summary Selection'[Award Summary Selection Order]),  
+        0, _count,
+        1, _obligated
+)
