@@ -1,0 +1,7 @@
+/*
+Location: MIDP_DIRECTORY_G table
+Explanation: 
+*/
+
+M_assigned_working_hours = 
+    SUM(MIDP_DIRECTORY_G[ASG_WORKING_HOURS])

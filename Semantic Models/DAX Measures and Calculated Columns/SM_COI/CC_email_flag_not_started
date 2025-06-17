@@ -1,0 +1,32 @@
+/*
+Location: MIDP_DIRECTORY_G table
+Explanation:
+COI_email_flag_not_started is a calculated column that sets an email notification flag for individuals who haven’t yet 
+begun their required COI disclosure process. 
+It functions as follows:
+- Retrieves the individual’s CSU ID and whether they are required to submit a COI disclosure.
+- Looks up their latest disclosure approval status based on the CSU ID.
+- If:
+    - COI disclosure is required,
+    - Their latest status is “Not Started”, and
+    - Their department is not “0001” or “0004”
+    → Then the flag is set to TRUE (indicating they should be emailed).
+    - Otherwise, it returns FALSE.
+*/
+
+COI_email_flag_not_started = 
+VAR _csuid = 'MIDP_DIRECTORY_G'[CSU_ID]
+VAR _coi_required = 'MIDP_DIRECTORY_G'[COI_REQUIRED]
+VAR _not_started = 
+    CALCULATE(
+        'COI_DISCLOSURES_ALL_B'[M_latest_approval_status],
+        'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _csuid 
+        && _coi_required = TRUE()
+    )
+
+RETURN
+IF(
+    _coi_required = TRUE() && _not_started = "Not Started" && not 'MIDP_DIRECTORY_G'[DEPARTMENT_COMBINED] in {"0001", "0004"}, 
+    TRUE(), 
+    FALSE()
+)

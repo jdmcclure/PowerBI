@@ -1,0 +1,6 @@
+/*
+Location: MIDP_DIRECTORY_G table
+*/
+
+M_count_directory = 
+COUNTROWS('MIDP_DIRECTORY_G')

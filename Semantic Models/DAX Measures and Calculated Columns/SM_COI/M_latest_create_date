@@ -1,0 +1,24 @@
+/*
+Location: COI_DISCLOSURES_ALL_B table
+Explanation: 
+*/
+
+M_latest_create_date = 
+VAR _netid = SELECTEDVALUE('MIDP_DIRECTORY_G'[CSU_ID])
+
+VAR _create_date =
+CALCULATE(
+    MAX('COI_DISCLOSURES_ALL_B'[CREATED]),
+    FILTER(
+        ALL('COI_DISCLOSURES_ALL_B'),
+        'COI_DISCLOSURES_ALL_B'[MOST_RECENT_SUBMIT_ACTION] = TRUE()
+            && 'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _netid
+    )
+)
+
+RETURN
+    IF(
+        ISBLANK(_create_date),
+        "Not Started",
+        FORMAT(_create_date, "mm/dd/yyyy HH:mm")
+    )

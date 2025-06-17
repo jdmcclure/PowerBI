@@ -1,0 +1,44 @@
+/*
+Location: MIDP_DIRECTORY_G table
+Explanation: 
+CC_compliance is a calculated column that determines whether an individual is compliant with Conflict of Interest (COI) disclosure requirements. 
+It performs the following checks:
+- Retrieves the individual's CSU ID and whether a COI disclosure is required.
+- Finds the individual's most relevant action type and disclosure expiration date from the disclosures table, using the CSU ID as a match key.
+- If the individual is required to submit a COI disclosure, it checks:
+    - If there’s no expiration date, or
+    - If the expiration date is before today
+    → Then, the individual is marked as "Not Compliant".
+    - Otherwise, the individual is marked as "Compliant".
+If COI disclosure is not required, no compliance status is returned.
+*/
+
+CC_compliance = 
+VAR _csuid = 'MIDP_DIRECTORY_G'[CSU_ID]
+VAR _coi_required = 'MIDP_DIRECTORY_G'[COI_REQUIRED]
+VAR _action_type = 
+    CALCULATE(
+        SELECTEDVALUE('COI_DISCLOSURES_ALL_B'[ACTION_TYPE]),
+        FILTER(
+            COI_DISCLOSURES_ALL_B,
+            COI_DISCLOSURES_ALL_B[SCHOOL_ID] = _csuid
+        )
+    )
+VAR _expiration_date =
+    CALCULATE(
+        [M_expiration_date],
+        FILTER(
+            'COI_DISCLOSURES_ALL_B',
+            'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _csuid
+        )
+    )
+RETURN
+IF(
+    _coi_required = TRUE(),
+    SWITCH(
+        TRUE(),
+        ISBLANK(_expiration_date) , "Not Compliant",
+        _expiration_date < TODAY(), "Not Compliant",
+        "Compliant"
+    )
+)

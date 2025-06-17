@@ -1,0 +1,6 @@
+/*
+Location: COI_DISCLOSURES_ALL_B table
+Explanation: 
+*/
+
+M_count_disclosures = COUNTROWS('COI_DISCLOSURES_ALL_B')

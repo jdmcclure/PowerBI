@@ -1,0 +1,50 @@
+/*
+Location: COI_DISCLOSURES_ALL_B table
+Explanation: 
+CF_days_to_expiration is a DAX measure that returns a color code based on how close an individual's 
+COI disclosure is to expiring. 
+It works like this:
+    - Identifies the person via their CSU ID.
+    - Retrieves the last updated date for their most recent submitted disclosure.
+    - Calculates the expiration date as 365 days after that update.
+    - Determines the number of days between today and the expiration date.
+    - Based on that number of days, assigns a color code:
+        - "#F0C9AB": If the expiration date is blank or already passed,
+        - "#E9E7C7": If the expiration is within the next 30 days,
+        - "#FFFFFF": If there are 30 or more days remaining.
+*/
+
+CF_days_to_expiration = 
+VAR _status = MAX('COI_DISCLOSURES_ALL_B'[DISCLOSURE_APPROVAL_STATUS])
+VAR _netid = SELECTEDVALUE('MIDP_DIRECTORY_G'[CSU_ID])
+
+VAR _disclosure_date =
+    CALCULATE(
+        MAX('COI_DISCLOSURES_ALL_B'[UPDATED]),
+        FILTER(
+            ALL('COI_DISCLOSURES_ALL_B'),
+            'COI_DISCLOSURES_ALL_B'[MOST_RECENT_SUBMIT_ACTION] = TRUE()
+                && 'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _netid
+        )
+    )
+VAR _expiration_date = 
+    IF(
+        ISBLANK(_disclosure_date),
+        BLANK(),
+        _disclosure_date + 365
+    )
+VAR _days = 
+    IF(
+        NOT ISBLANK(_expiration_date),
+        DATEDIFF(TODAY(), _expiration_date, DAY),
+        BLANK()
+    )
+    
+RETURN
+SWITCH(
+    TRUE(),
+    ISBLANK(_days), "#F0C9AB",
+    _days < 0, "#F0C9AB",
+    _days < 30, "#E9E7C7",
+    "#FFFFFF"
+)

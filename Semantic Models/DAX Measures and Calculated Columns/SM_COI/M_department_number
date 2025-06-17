@@ -1,0 +1,8 @@
+/*
+Location: MIDP_DIRECTORY_G table
+*/
+
+M_department_number = 
+VAR DeptNum = SELECTEDVALUE('MIDP_DIRECTORY_G'[DEPARTMENT_COMBINED])
+RETURN 
+CONVERT(DeptNum, INTEGER)

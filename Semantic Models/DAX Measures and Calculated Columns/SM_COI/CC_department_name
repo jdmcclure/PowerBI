@@ -1,0 +1,16 @@
+/*
+Location: MIDP_DIRECTORY_G table
+Explanation:
+CC_DEPARTMENT_NAME is a calculated column that assigns the department name associated with each individual in the directory. 
+It works by:
+    - Looking up the value of UNIT_NAME from the 'unit' table,
+    - Matching the UNIT NUMBER in that table to the DEPARTMENT_COMBINED field in 'MIDP_DIRECTORY_G'.
+In essence, it's pulling the official department name for each person based on their combined department ID.
+*/
+
+CC_DEPARTMENT_NAME = 
+LOOKUPVALUE(
+    'unit'[UNIT_NAME],
+    'unit'[UNIT NUMBER], 
+    'MIDP_DIRECTORY_G'[DEPARTMENT_COMBINED]
+)

@@ -1,0 +1,35 @@
+/*
+Location: MIDP_DIRECTORY_G table
+Explanation:
+CC_email_flag_expired is a calculated column that determines whether a notification flag should be set for individuals 
+with problematic COI disclosure statuses. Specifically, it:
+    - Pulls the individual’s CSU ID and whether a COI disclosure is required.
+    - Checks the most recent disclosure record for that individual where:
+        - The action is marked as the most recent,
+        - The disclosure status is either "Expired" or "In Progress".
+        - If a disclosure is required, 
+            and the person has at least one expired or in-progress most recent disclosure, 
+            and they are not part of departments “0001” or “0004”,
+        → Then the flag is set to TRUE (indicating they should be emailed).
+    - Otherwise, the flag returns FALSE
+*/
+
+CC_email_flag_expired = 
+VAR _csuid = 'MIDP_DIRECTORY_G'[CSU_ID]
+VAR _coi_required = 'MIDP_DIRECTORY_G'[COI_REQUIRED]
+VAR _expired_most_recent =
+    CALCULATE(
+        COUNTROWS('COI_DISCLOSURES_ALL_B'),
+        FILTER(
+            'COI_DISCLOSURES_ALL_B',
+            'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _csuid &&
+            'COI_DISCLOSURES_ALL_B'[MOST_RECENT_ACTION] = TRUE() &&
+            'COI_DISCLOSURES_ALL_B'[DISCLOSURE_APPROVAL_STATUS] in {"Expired", "In Progress"}
+        )
+    )
+RETURN
+IF(
+    _coi_required = TRUE() && _expired_most_recent > 0 && not 'MIDP_DIRECTORY_G'[DEPARTMENT_COMBINED] in {"0004", "0001"},
+    TRUE(),
+    FALSE()
+)

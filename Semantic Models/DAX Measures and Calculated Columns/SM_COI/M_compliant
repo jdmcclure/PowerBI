@@ -1,0 +1,23 @@
+/*
+Location: MIDP_DIRECTORY_G table
+*/
+M_compliant = 
+VAR _csuid = SELECTEDVALUE('MIDP_DIRECTORY_G'[CSU_ID])
+VAR _coi_required = SELECTEDVALUE('MIDP_DIRECTORY_G'[COI_REQUIRED])
+
+VAR _expiration_date =
+    CALCULATE(
+        [M_expiration_date],
+        'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _csuid
+    )
+
+RETURN
+IF(
+    _coi_required = TRUE(),
+    SWITCH(
+        TRUE(),
+        ISBLANK(_expiration_date), "Not Compliant",
+        _expiration_date < TODAY(), "Not Compliant",
+        "Compliant"
+    )
+)
