@@ -1,0 +1,108 @@
+/*
+Location: MIDP_DIRECTORY_G table
+Explanation:
+This measure determines an individual's compliance status with required training or 
+disclosure obligations by evaluating expiration dates, requirement flags, and recent 
+payroll activity.
+
+Key Inputs:
+    -REQ_ID: Identifies the type of requirement:
+        -"2" → RCR Online
+        -"1" → RCR Face-to-Face
+        -"10" → COI Disclosure
+    -NET_ID: Unique identifier for the individual.
+
+New Addition:
+    -_latest_payroll: Retrieves the most recent payroll end date for the individual 
+     from the PAYROLL_RECENT_B table. This is used to ensure that the training was 
+     valid during the individual's most recent employment period.
+
+Expiration Checks:
+    Retrieves the latest expiration date for each requirement type from the 
+    COMBINED_TRAINING table.
+
+Requirement Flags:
+    Uses LOOKUPVALUE to determine if the individual is required to complete each type 
+    of training/disclosure based on the MIDP_DIRECTORY table.
+
+Compliance Logic:
+    For each REQ_ID, the measure:
+        -Checks if the requirement is applicable.
+        -If applicable, verifies:
+            -The expiration date is present and not in the past.
+            -The training was valid at the time of the most recent payroll 
+             activity (i.e., _latest_payroll < expiration).
+        -Returns:
+            -"Compliant" if all conditions are met.
+            -"Not Compliant" if required but expired or invalid during recent employment.
+            -"Not Applicable" if the requirement does not apply to the individual.
+*/
+
+CC_COMPLIANCE_STATUS = 
+VAR _req_id = 'COMBINED_TRAINING'[REQ_ID]
+VAR _net_id = 'COMBINED_TRAINING'[NET_ID]
+
+// Expirations
+VAR _rcr_expiration =
+    CALCULATE(
+        MAX('COMBINED_TRAINING'[EXPIRATION_DATE]),
+        'COMBINED_TRAINING'[REQ_ID] = "2",
+        'COMBINED_TRAINING'[NET_ID] = _net_id
+    )
+
+VAR _rcr_f2f_expiration =
+    CALCULATE(
+        MAX('COMBINED_TRAINING'[EXPIRATION_DATE]),
+        'COMBINED_TRAINING'[REQ_ID] = "1",
+        'COMBINED_TRAINING'[NET_ID] = _net_id
+    )
+
+VAR _coi_expiration =
+    CALCULATE(
+        MAX('COMBINED_TRAINING'[EXPIRATION_DATE]),
+        'COMBINED_TRAINING'[REQ_ID] = "10",
+        'COMBINED_TRAINING'[NET_ID] = _net_id
+    )
+
+// Requirements
+VAR _rcr_required =
+    LOOKUPVALUE('MIDP_DIRECTORY'[RCR_ONLINE_REQUIRED], 'MIDP_DIRECTORY'[NETID], _net_id) = "True"
+
+VAR _rcr_f2f_required =
+    LOOKUPVALUE('MIDP_DIRECTORY'[RCR_F2F_REQUIRED], 'MIDP_DIRECTORY'[NETID], _net_id) = "True"
+
+VAR _coi_required =
+    LOOKUPVALUE('MIDP_DIRECTORY'[COI_REQUIRED], 'MIDP_DIRECTORY'[NETID], _net_id) = "True"
+
+// Compliance Logic
+RETURN
+SWITCH(
+    TRUE(),
+    _req_id = "2",
+        IF(
+            _rcr_required,
+            IF(
+                NOT ISBLANK(_rcr_expiration) && _rcr_expiration >= TODAY(), 
+                "Compliant",
+                "Not Compliant"
+            ),
+            "Not Applicable"
+        ),
+    _req_id = "1",
+        IF(
+            _rcr_f2f_required,
+            IF(
+                NOT ISBLANK(_rcr_f2f_expiration) && _rcr_f2f_expiration >= TODAY(), 
+                "Compliant", 
+                "Not Compliant"
+            ),
+            "Not Applicable"
+        ),
+    _req_id = "10",
+        IF(
+            _coi_required,
+            IF(NOT ISBLANK(_coi_expiration) && _coi_expiration >= TODAY(), "Compliant", "Not Compliant"),
+            "Not Applicable"
+        ),
+    BLANK()
+)
