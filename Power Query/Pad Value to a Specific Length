@@ -1,0 +1,15 @@
+/*
+Text.PadStart(_, 4, "0") ensures the value is always 4 characters long
+by adding leading 0's as needed.
+*/
+
+Padded_department_# = Table.TransformColumns(
+    #"Renamed columns", 
+    {
+        {
+            "DEPT_NUMBER", 
+            each Text.PadStart(_, 4, "0"), 
+            type text
+        }
+    }
+)
