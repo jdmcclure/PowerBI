@@ -1,0 +1,14 @@
+CF_compliant_of_total_title = 
+VAR _status_count =
+    CALCULATE(
+        COUNTROWS('COMBINED_TRAINING'),
+        'COMBINED_TRAINING'[CC_COMPLIANCE_STATUS] = "Compliant"
+    )
+
+VAR _total_tracked =
+    CALCULATE(
+        COUNTROWS('COMBINED_TRAINING'),
+        'COMBINED_TRAINING'[CC_TRAINING_REQUIRED] = "Required"
+    )
+RETURN
+    FORMAT(_status_count, "#,0") & " of " & FORMAT(_total_tracked, "#,0")

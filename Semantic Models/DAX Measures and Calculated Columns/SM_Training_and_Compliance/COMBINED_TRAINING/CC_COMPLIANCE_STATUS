@@ -64,7 +64,20 @@ VAR _coi_expiration =
         'COMBINED_TRAINING'[NET_ID] = _net_id
     )
 
-// Requirements
+VAR _rst_expiration = 
+    CALCULATE(
+        MAX('COMBINED_TRAINING'[EXPIRATION_DATE]),
+        'COMBINED_TRAINING'[REQ_ID] = "16",
+        'COMBINED_TRAINING'[NET_ID] = _net_id
+    )
+
+// Other Info
+VAR _latest_payroll = 
+    CALCULATE(
+        MAX('RCR_REQUIREMENT_TRACKING_S'[PAY_END_DATE]),
+        COMBINED_TRAINING[NET_ID] = _net_id
+    )
+
 VAR _rcr_required =
     LOOKUPVALUE('MIDP_DIRECTORY'[RCR_ONLINE_REQUIRED], 'MIDP_DIRECTORY'[NETID], _net_id) = "True"
 
@@ -74,35 +87,73 @@ VAR _rcr_f2f_required =
 VAR _coi_required =
     LOOKUPVALUE('MIDP_DIRECTORY'[COI_REQUIRED], 'MIDP_DIRECTORY'[NETID], _net_id) = "True"
 
+VAR _rst_required = 
+    LOOKUPVALUE('MIDP_DIRECTORY'[RST_REQUIRED], 'MIDP_DIRECTORY'[NETID], _net_id) = "True"
+
+// Flag for NSF RCR scenario (REQ_ID = "2" and AWARD_TYPE = "NSF")
+VAR _rcr_nsf_scenario =
+    CALCULATE(
+        COUNTROWS('RCR_REQUIREMENT_TRACKING_S'),
+        'RCR_REQUIREMENT_TRACKING_S'[NET_ID] = _net_id,
+        'RCR_REQUIREMENT_TRACKING_S'[AWARD_TYPE] IN {"NSF", "NIFA"}
+    ) > 0
+
 // Compliance Logic
 RETURN
 SWITCH(
     TRUE(),
+
+    // Special Case: RCR Online required and award is NSF or NIFA — Always Compliant if completed
+    _req_id = "2" && _rcr_nsf_scenario,
+        IF(
+            _rcr_required,
+            IF(NOT ISBLANK(_rcr_expiration), "Compliant", "Not Compliant"),
+            "Not Applicable"
+        ),
+
     _req_id = "2",
         IF(
             _rcr_required,
             IF(
-                NOT ISBLANK(_rcr_expiration) && _rcr_expiration >= TODAY(), 
+                NOT ISBLANK(_rcr_expiration) && (_rcr_expiration >= TODAY() || _latest_payroll < _rcr_expiration), 
                 "Compliant",
                 "Not Compliant"
             ),
             "Not Applicable"
         ),
+
     _req_id = "1",
         IF(
             _rcr_f2f_required,
             IF(
-                NOT ISBLANK(_rcr_f2f_expiration) && _rcr_f2f_expiration >= TODAY(), 
+                NOT ISBLANK(_rcr_f2f_expiration) && (_rcr_f2f_expiration >= TODAY() || _latest_payroll < _rcr_f2f_expiration), 
                 "Compliant", 
                 "Not Compliant"
             ),
             "Not Applicable"
         ),
+
     _req_id = "10",
         IF(
             _coi_required,
-            IF(NOT ISBLANK(_coi_expiration) && _coi_expiration >= TODAY(), "Compliant", "Not Compliant"),
+            IF(
+                NOT ISBLANK(_coi_expiration) && _coi_expiration >= TODAY(), 
+                "Compliant", 
+                "Not Compliant"
+            ),
             "Not Applicable"
         ),
+    
+    _req_id = "16",
+        IF(
+            _rst_required,
+            IF(
+                NOT ISBLANK(_rst_expiration) && _rst_expiration >= TODAY(), 
+                "Compliant", 
+                "Not Compliant"
+            ),
+            "Not Applicable"
+        ),
+        
     BLANK()
 )

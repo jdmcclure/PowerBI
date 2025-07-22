@@ -1,0 +1,17 @@
+M_sso_complete = 
+VAR _netid = SELECTEDVALUE('CITI_TRAINING_B'[INSTITUTIONAL_USERNAME])
+RETURN
+IF(
+    MAX(COMBINED_TRAINING[REQ_ID]) = "2",
+    IF(
+        ISBLANK(
+            CALCULATE(
+                FIRSTNONBLANK('CITI_TRAINING_B'[SSO_COMPLETE], 1),
+                'MIDP_DIRECTORY'[NETID] = _netid
+            )
+        ),
+        "No",
+        "Yes"
+    ),
+    BLANK()
+)

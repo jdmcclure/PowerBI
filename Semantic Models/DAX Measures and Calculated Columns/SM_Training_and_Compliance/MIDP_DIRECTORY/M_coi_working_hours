@@ -1,0 +1,6 @@
+M_coi_working_hours = 
+IF(
+    SELECTEDVALUE('TRAINING_XREF'[DESCRIPTION]) = "Conflict of Interest (COI) Disclosure",
+    SUM('MIDP_DIRECTORY'[ASG_WORKING_HOURS]),
+    BLANK()
+)

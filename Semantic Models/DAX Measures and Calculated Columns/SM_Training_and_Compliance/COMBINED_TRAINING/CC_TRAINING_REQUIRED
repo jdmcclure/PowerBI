@@ -1,0 +1,48 @@
+CC_TRAINING_REQUIRED = 
+VAR _req_id = 'COMBINED_TRAINING'[REQ_ID]
+VAR _net_id = 'COMBINED_TRAINING'[NET_ID]
+VAR _csu_id = LOOKUPVALUE('MIDP_DIRECTORY'[CSU_ID], 'MIDP_DIRECTORY'[NETID], 'COMBINED_TRAINING'[NET_ID])
+
+// Requirements
+VAR _rcr_required =
+    LOOKUPVALUE('MIDP_DIRECTORY'[RCR_ONLINE_REQUIRED], 'MIDP_DIRECTORY'[NETID], _net_id) = "True"
+
+VAR _rcr_f2f_required =
+    LOOKUPVALUE('MIDP_DIRECTORY'[RCR_F2F_REQUIRED], 'MIDP_DIRECTORY'[NETID], _net_id) = "True"
+
+VAR _coi_required =
+    LOOKUPVALUE('MIDP_DIRECTORY'[COI_REQUIRED], 'MIDP_DIRECTORY'[NETID], _net_id) = "True"
+
+VAR _rst_required = 
+    LOOKUPVALUE('MIDP_DIRECTORY'[RST_REQUIRED], 'MIDP_DIRECTORY'[NETID], _net_id) = "True"
+
+// Required logic
+RETURN
+SWITCH(
+    TRUE(),
+    _req_id = "2",
+        IF(
+            _rcr_required,
+            "Required",
+            "Not Required"
+        ),
+    _req_id = "1",
+        IF(
+            _rcr_f2f_required,
+            "Required",
+            "Not Required"
+        ),
+    _req_id = "10",
+        IF(
+            _coi_required,
+            "Required",
+            "Not Required"
+        ),
+    _req_id = "16",
+        IF(
+            _rst_required,
+            "Required",
+            "Not Required"
+        ),
+    BLANK()
+)

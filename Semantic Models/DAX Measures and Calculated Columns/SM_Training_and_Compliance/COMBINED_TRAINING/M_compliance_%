@@ -1,0 +1,16 @@
+M_compliance_% = 
+VAR _current_status = "Compliant"
+VAR _status_count =
+    CALCULATE(
+        COUNTROWS('COMBINED_TRAINING'),
+        'COMBINED_TRAINING'[CC_COMPLIANCE_STATUS] = _current_status
+    )
+
+VAR _totalTracked =
+    CALCULATE(
+        COUNTROWS('COMBINED_TRAINING'),
+        'COMBINED_TRAINING'[CC_TRAINING_REQUIRED] = "Required"
+    )
+
+RETURN
+    DIVIDE(_status_count, _totalTracked, 0)

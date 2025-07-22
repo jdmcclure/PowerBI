@@ -1,0 +1,16 @@
+M_latest_coi_disc_status = 
+
+VAR _csuid = SELECTEDVALUE('MIDP_DIRECTORY'[CSU_ID])
+
+VAR _reqid = MAX('COMBINED_TRAINING'[REQ_ID])
+
+RETURN
+IF(
+    _reqid = "10",
+    LOOKUPVALUE(
+        'COI_DISCLOSURES_B'[STATUS],
+        'COI_DISCLOSURES_B'[SCHOOL_ID],
+        _csuid
+    ),
+    BLANK()
+)

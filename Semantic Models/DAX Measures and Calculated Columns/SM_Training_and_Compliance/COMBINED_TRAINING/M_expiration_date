@@ -1,0 +1,28 @@
+M_expiration_date = 
+VAR _req_id = MAX('COMBINED_TRAINING'[REQ_ID])
+VAR _net_id = MAX('COMBINED_TRAINING'[NET_ID])
+VAR _days = MAX('COMBINED_TRAINING'[EXPIRING_DAYS])
+VAR _expiration_date = MAX('COMBINED_TRAINING'[EXPIRATION_DATE])
+VAR _effective_date = MAX('COMBINED_TRAINING'[EFFECTIVE_DATE])
+VAR _has_training = NOT ISBLANK(MAX('COMBINED_TRAINING'[SRC_ID]))
+
+// NSF + REQ_ID = 2 + Completed (has EFFECTIVE_DATE)
+VAR _is_nsf_no_expiration =
+    _req_id = "2" &&
+    NOT ISBLANK(_effective_date) &&
+    CALCULATE(
+        COUNTROWS('RCR_REQUIREMENT_TRACKING_S'),
+        'RCR_REQUIREMENT_TRACKING_S'[NET_ID] = _net_id,
+        'RCR_REQUIREMENT_TRACKING_S'[AWARD_TYPE] IN {"NSF", "NIFA"}
+    ) > 0
+
+RETURN
+IF(
+    _has_training,
+    IF(
+        _is_nsf_no_expiration,
+        BLANK(),
+        _expiration_date
+    ),
+    BLANK()
+)
