@@ -1,0 +1,156 @@
+let
+    // Load source
+    Source = Sql.Database(
+        "akelll3276yuxkzbgz77f3h4rm-vu3ae6b6lp7ermd2na6t75iyau.datawarehouse.fabric.microsoft.com", 
+        "RS_Lakehouse"
+    ),
+
+    // Load and clean COMBINED_TRAINING
+    COMBINED_TRAINING_RAW = Source{[Schema="dbo", Item="COMBINED_TRAINING_G"]}[Data],
+    COMBINED_TRAINING = Table.SelectRows(COMBINED_TRAINING_RAW, each [NET_ID] <> null and [NET_ID] <> ""),
+
+    // Load REQUIREMENTS tables
+    RCR_REQUIREMENTS = Source{[Schema="dbo", Item="RCR_REQUIREMENT_TRACKING_S"]}[Data],
+    COI_REQUIREMENTS = Source{[Schema="dbo", Item="COI_REQUIREMENT_TRACKING_S"]}[Data],
+    RST_REQUIREMENTS = Source{[Schema = "dbo", Item = "RST_REQUIREMENT_TRACKING_S"]}[Data],
+
+    // Anti-join to find NET_ID + REQ_ID combinations not in COMBINED_TRAINING
+    Join_key = Table.NestedJoin(
+        RCR_REQUIREMENTS, 
+        {"NET_ID", "REQ_ID"}, 
+        COMBINED_TRAINING, 
+        {"NET_ID", "REQ_ID"}, 
+        "Joined", 
+        JoinKind.LeftAnti
+    ),
+
+    // Drop join results
+    Join_key_clean = Table.RemoveColumns(Join_key,{"Joined", "CSU_ID", "PAY_END_DATE", "ELEMENT_NAME"}),
+
+    Join_key_add_columns = Table.AddColumn(
+        Join_key_clean,
+        "SRC_ID",
+        each
+            if [REQ_ID] = "1" then "RCRCourses:1:1"
+            else if [REQ_ID] = "2" then "CITI:228988:1"
+            else null
+    ),
+
+    // Identify columns in COMBINED_TRAINING that are missing from RCR_REQUIREMENTS
+    Combined_training_columns = Table.ColumnNames(COMBINED_TRAINING),
+    Join_key_columns = Table.ColumnNames(Join_key_add_columns),
+    Missing_columns = List.Difference(Combined_training_columns, Join_key_columns),
+
+    // Add missing columns, using custom logic for SRC_ID
+    Join_key_with_all_columns = List.Accumulate(
+        Missing_columns,
+        Join_key_add_columns,
+        (state, colName) => Table.AddColumn(state, colName, each null)
+    ),
+
+    // Reorder columns to match COMBINED_TRAINING
+    Final_columns = Table.SelectColumns(Join_key_with_all_columns, Combined_training_columns),
+
+    // Append the new rows into COMBINED_TRAINING
+    Combined_RCR_Missing = Table.Combine({COMBINED_TRAINING, Final_columns}),
+
+    // Anti-join to find NET_ID + REQ_ID combinations not in COMBINED_TRAINING
+    Join_key_coi = Table.NestedJoin(
+        COI_REQUIREMENTS, 
+        {"NET_ID", "REQ_ID"}, 
+        COMBINED_TRAINING, 
+        {"NET_ID", "REQ_ID"}, 
+        "Joined", 
+        JoinKind.LeftAnti
+    ),
+
+    // Drop join results
+    Join_key_clean_coi = Table.RemoveColumns(Join_key_coi,{"Joined", "CSU_ID"}),
+
+    Join_key_add_columns_coi = Table.AddColumn(
+        Join_key_clean_coi,
+        "SRC_ID",
+        each
+            if [REQ_ID] = "10"
+            then "COI:1:1"
+            else null
+    ),
+
+    // Identify columns in COMBINED_TRAINING that are missing from RCR_REQUIREMENTS
+    Combined_training_columns_coi = Table.ColumnNames(Combined_RCR_Missing),
+    Join_key_columns_coi = Table.ColumnNames(Join_key_add_columns_coi),
+    Missing_columns_coi = List.Difference(Combined_training_columns_coi, Join_key_columns_coi),
+
+    // Add missing columns, using custom logic for SRC_ID
+    Join_key_with_all_columns_coi = List.Accumulate(
+        Missing_columns_coi,
+        Join_key_add_columns_coi,
+        (state, colName) => Table.AddColumn(state, colName, each null)
+    ),
+
+    // Reorder columns to match COMBINED_TRAINING
+    Final_columns_coi = Table.SelectColumns(Join_key_with_all_columns_coi, Combined_training_columns_coi),
+
+    // Append the new rows into COMBINED_TRAINING
+    Combined_coi_missing = Table.Combine({Combined_RCR_Missing, Final_columns_coi}),
+
+    // Anti-join to find NET_ID + REQ_ID combinations not in COMBINED_TRAINING
+    Join_key_rst = Table.NestedJoin(
+        RST_REQUIREMENTS, 
+        {"NET_ID", "REQ_ID"}, 
+        COMBINED_TRAINING, 
+        {"NET_ID", "REQ_ID"}, 
+        "Joined", 
+        JoinKind.LeftAnti
+    ),
+
+    // Drop join results
+    Join_key_clean_rst = Table.RemoveColumns(
+        Join_key_rst,
+        {
+            "Joined", 
+            "person_id"
+        }
+    ),
+
+    Join_key_add_columns_rst = Table.AddColumn(
+        Join_key_clean_rst,
+        "SRC_ID",
+        each
+            if [REQ_ID] = "16"
+            then "CITI:335180:1"
+            else null
+    ),
+
+    // Identify columns in COMBINED_TRAINING that are missing from RST_REQUIREMENTS
+    Combined_training_columns_rst = Table.ColumnNames(Combined_coi_missing),
+    Join_key_columns_rst = Table.ColumnNames(Join_key_add_columns_rst),
+    Missing_columns_rst = List.Difference(Combined_training_columns_rst, Join_key_columns_rst),
+
+    // Add missing columns, using custom logic for SRC_ID
+    Join_key_with_all_columns_rst = List.Accumulate(
+        Missing_columns_rst,
+        Join_key_add_columns_rst,
+        (state, colName) => Table.AddColumn(state, colName, each null)
+    ),
+
+    // Reorder columns to match COMBINED_TRAINING
+    Final_columns_rst = Table.SelectColumns(Join_key_with_all_columns_rst, Combined_training_columns_rst),
+
+    // Append the new rows into COMBINED_TRAINING
+    Combined_rst_missing = Table.Combine({Combined_coi_missing, Final_columns_rst}),
+
+    // Set proper types if needed
+    Changed_type = Table.TransformColumnTypes(
+        Combined_rst_missing,
+        {
+            {"SRC_ID", type text},
+            {"EFFECTIVE_DATE", type nullable date},
+            {"EXTRA_INFO_KEY", type nullable text},
+            {"VALID_YEARS", type nullable number},
+            {"EXPIRATION_DATE", type nullable date},
+            {"EXPIRING_DAYS", Int64.Type}
+        }
+    )
+in
+    Changed_type
