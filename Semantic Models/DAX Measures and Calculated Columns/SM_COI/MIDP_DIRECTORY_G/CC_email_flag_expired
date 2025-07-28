@@ -7,6 +7,7 @@ with problematic COI disclosure statuses. Specifically, it:
     - Checks the most recent disclosure record for that individual where:
         - The action is marked as the most recent,
         - The disclosure status is either "Expired" or "In Progress".
+        - The person is marked as "Not Compliant" (You can have a disclosure in progress while compliant)
         - If a disclosure is required, 
             and the person has at least one expired or in-progress most recent disclosure, 
             and they are not part of departments “0001” or “0004”,
@@ -24,7 +25,8 @@ VAR _expired_most_recent =
             'COI_DISCLOSURES_ALL_B',
             'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _csuid &&
             'COI_DISCLOSURES_ALL_B'[MOST_RECENT_ACTION] = TRUE() &&
-            'COI_DISCLOSURES_ALL_B'[DISCLOSURE_APPROVAL_STATUS] in {"Expired", "In Progress"}
+            'COI_DISCLOSURES_ALL_B'[DISCLOSURE_APPROVAL_STATUS] in {"Expired", "In Progress"} &&
+            'MIDP_DIRECTORY_G'[CC_compliance] = "Not Compliant"
         )
     )
 RETURN

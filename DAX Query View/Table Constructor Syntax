@@ -45,3 +45,35 @@ SELECTCOLUMNS (
     "Min", [Value3],
     "Max", [Value4]
 )
+
+
+
+/*
+An expression I originally used in the SM_COI model.
+This DAX expression uses CALCULATETABLE in conjunction with SELECTCOLUMNS to create a filtered projection of the 'MIDP_DIRECTORY_G' table. The logic proceeds as follows:
+
+Column Selection:
+It extracts a subset of columns from the source table:
+- "FULL_NAME": Employee’s full name
+- "NETID": Unique network identifier
+- "PREFERRED_FIRST_NAME": Chosen first name for display
+- "PROPER_NAME_EMAIL": Formatted name associated with email
+
+Row Filtering:
+Only includes rows where the field 'CC_email_flag_expired' evaluates to TRUE(). This condition identifies directory records whose email flags are considered expired.
+
+Overall Purpose:
+The resulting table serves as a curated list of users with expired disclosures, containing just the essential identification and communication fields. This is used for downstream notifications.
+*/
+
+EVALUATE
+CALCULATETABLE(
+    SELECTCOLUMNS(
+        'MIDP_DIRECTORY_G',
+        "FULL_NAME", 'MIDP_DIRECTORY_G'[FULL_NAME],
+        "NETID", 'MIDP_DIRECTORY_G'[NETID],
+        "PREFERRED_FIRST_NAME", 'MIDP_DIRECTORY_G'[PREFERRED_FIRST_NAME],
+        "PROPER_NAME_EMAIL", 'MIDP_DIRECTORY_G'[PROPER_NAME_EMAIL]
+    ),
+    'MIDP_DIRECTORY_G'[CC_email_flag_expired] = TRUE()
+)

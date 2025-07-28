@@ -1,0 +1,66 @@
+let
+    // Source is the RS Lakehouse
+    Source = Sql.Database(
+        "akelll3276yuxkzbgz77f3h4rm-vu3ae6b6lp7ermd2na6t75iyau.datawarehouse.fabric.microsoft.com", 
+        "RS_Lakehouse"
+    ),
+
+    // Navigate to the directory table.
+    dbo_MIDP_DIRECTORY_G = Source{[Schema = "dbo", Item = "MIDP_DIRECTORY_G"]}[Data],
+
+    // Combined the student and HR department number columns. If HR department number is null 
+    // then use the student department code otherwise use HR department number.
+    Added_department_num = Table.AddColumn(
+        dbo_MIDP_DIRECTORY_G, 
+        "DEPARTMENT_COMBINED", 
+        each 
+            if [HR_DEPARTMENT_NUMBER] is null 
+            then [STUDENT_DEPARTMENT_CODE]
+            else [HR_DEPARTMENT_NUMBER], 
+        type text
+    ),
+
+    // Combined the student and HR department name columns. If HR department name is null
+    // then use the student department name otherwise use the HR department name.
+    Added_department_name = Table.AddColumn(
+        Added_department_num, 
+        "DEPARTMENT_NAME_COMBINED", 
+        each 
+            if [HR_DEPARTMENT] is null 
+            then [STUDENT_DEPARTMENT] 
+            else [HR_DEPARTMENT], 
+        type text
+    ),
+
+    // Added a NETID email field for RLS
+    Added_net_id_email = Table.AddColumn(
+        Added_department_name, 
+        "NET_ID_EMAIL", 
+        each [NETID] & "@colostate.edu"
+    ),
+
+    // Removed unnecessary columns
+    Removed_columns = Table.RemoveColumns(
+        Added_net_id_email, 
+        {
+        "HR_DATA_FOUND", 
+        "HR_DEPARTMENT", 
+        "HR_DEPARTMENT_NUMBER", 
+        "HR_TITLE_2", 
+        "STUDENT_DATA_FOUND", 
+        "STUDENT_DEPARTMENT_CODE", 
+        "STUDENT_DEPARTMENT", 
+        "RCR_F2F_REQUIRED", 
+        "RCR_ONLINE_REQUIRED"
+        }
+    ),
+
+    // Changed column data types
+    Changed_types = Table.TransformColumnTypes(
+        Removed_columns, 
+        {
+            {"COI_REQUIRED", type logical}
+        }
+    )
+in
+    Changed_types

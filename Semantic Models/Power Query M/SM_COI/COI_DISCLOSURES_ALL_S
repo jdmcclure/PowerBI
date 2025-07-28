@@ -1,0 +1,67 @@
+let
+    Source = Sql.Database("akelll3276yuxkzbgz77f3h4rm-vu3ae6b6lp7ermd2na6t75iyau.datawarehouse.fabric.microsoft.com", "RS_Lakehouse"),
+    dbo_COI_DISCLOSURES_ALL_B = Source{[Schema="dbo",Item="COI_DISCLOSURES_ALL_S"]}[Data],
+    Dim = MIDP_DIRECTORY_G,
+
+    // Filter dimension to only those who are required
+    Required = Table.SelectRows(Dim, each [COI_REQUIRED] = true),
+
+    // Anti-join to get only required people not in the fact table
+    Missing = Table.NestedJoin(
+        Required,
+        {"CSU_ID"},
+        dbo_COI_DISCLOSURES_ALL_B,
+        {"SCHOOL_ID"},
+        "JoinCol",
+        JoinKind.LeftAnti
+    ),
+
+    // Add the columns you want to populate
+    AddSchoolID = Table.AddColumn(Missing, "SCHOOL_ID", each [CSU_ID]),
+    AddStatus = Table.AddColumn(AddSchoolID, "DISCLOSURE_APPROVAL_STATUS", each "Not Started"),
+    AddFlag = Table.AddColumn(AddStatus, "IS_PLACEHOLDER", each true),
+    Add_action = Table.AddColumn(AddFlag, "MOST_RECENT_ACTION", each true),
+    Add_submit_action = Table.AddColumn(Add_action, "MOST_RECENT_SUBMIT_ACTION", each true),
+
+    // Make sure columns match the fact table schema
+    FactColumns = Table.ColumnNames(dbo_COI_DISCLOSURES_ALL_B),
+    Placeholders = Table.SelectColumns(Add_submit_action, List.Intersect({Table.ColumnNames(Add_submit_action), FactColumns})),
+    MissingColumns = List.Difference(FactColumns, Table.ColumnNames(Placeholders)),
+
+    // Add all other columns as null
+    AddNullCols = List.Accumulate(
+        MissingColumns,
+        Placeholders,
+        (state, colName) => Table.AddColumn(state, colName, each null)
+    ),
+
+    // Reorder to match original fact table
+    FinalPlaceholders = Table.SelectColumns(AddNullCols, FactColumns),
+
+    // Append to the original fact table
+    Output = Table.Combine({dbo_COI_DISCLOSURES_ALL_B, FinalPlaceholders}),
+    
+    // Changed data types
+    Changed_type = Table.TransformColumnTypes(
+        Output,
+        {
+            {"DISCLOSURE_ID", type text}, 
+            {"CREATED", type date}, 
+            {"LAST_NAME", type text}, 
+            {"FIRST_NAME", type text}, 
+            {"SCHOOL_ID", type text}, 
+            {"DISCLOSURE_APPROVAL_STATUS", type text}, 
+            {"ROUTING_STATUS", type text}, 
+            {"DISPOSITION_STATUS", type text}, 
+            {"DISPOSITION_TYPE_CD", Int64.Type}, 
+            {"ACTION_TYPE", type text}, 
+            {"USER_ID", type text}, 
+            {"UPDATED", type datetime}, 
+            {"PRIMARY_DEPT_CODE", type text}, 
+            {"MOST_RECENT_ACTION", type logical}, 
+            {"MOST_RECENT_SUBMIT_ACTION", type logical}
+        }
+    )
+    
+in
+    Changed_type
