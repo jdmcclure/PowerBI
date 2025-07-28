@@ -1,0 +1,42 @@
+/*
+Location: COI_DISCLOSURES_ALL_B table
+Explanation:
+
+This measure returns the approval status of an individual's most recent 
+Conflict of Interest (COI) disclosure.
+
+Logic:
+1. Retrieves the individual's CSU_ID from the MIDP_DIRECTORY_G table.
+2. Searches the COI_DISCLOSURES_ALL_B table for the most recent disclosure 
+   submission where:
+   - MOST_RECENT_SUBMIT_ACTION = TRUE()
+   - SCHOOL_ID matches the individual's CSU_ID
+3. Retrieves the DISCLOSURE_APPROVAL_STATUS from the matching disclosure record.
+4. Returns:
+   - The approval status if one is found
+   - BLANK() if no matching disclosure exists
+
+This measure is used to display the current approval state (e.g., "Approved", 
+"Pending", "Not Started") of the latest COI submission per individual.
+*/
+
+M_latest_approval_status = 
+
+VAR _netid = SELECTEDVALUE('MIDP_DIRECTORY_G'[CSU_ID])
+
+VAR _status =
+    CALCULATE(
+        MAX('COI_DISCLOSURES_ALL_B'[DISCLOSURE_APPROVAL_STATUS]),
+        FILTER(
+            ALL('COI_DISCLOSURES_ALL_B'),
+            'COI_DISCLOSURES_ALL_B'[MOST_RECENT_SUBMIT_ACTION] = TRUE()
+                && 'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _netid
+        )
+    )
+
+RETURN
+IF(
+    ISBLANK(_status),
+    BLANK(),
+    _status
+)

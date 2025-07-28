@@ -26,7 +26,9 @@ VAR _not_started =
 
 RETURN
 IF(
-    _coi_required = TRUE() && _not_started = "Not Started" && not 'MIDP_DIRECTORY_G'[DEPARTMENT_COMBINED] in {"0001", "0004"}, 
+    _coi_required = TRUE() 
+        && _not_started = "Not Started" 
+        && not 'MIDP_DIRECTORY_G'[DEPARTMENT_COMBINED] in {"0001", "0004"}, 
     TRUE(), 
     FALSE()
 )

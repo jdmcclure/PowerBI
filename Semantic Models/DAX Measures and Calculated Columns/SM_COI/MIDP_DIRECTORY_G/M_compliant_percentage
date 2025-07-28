@@ -1,0 +1,41 @@
+/*
+Location: MIDP_DIRECTORY_G table
+Explanation:
+
+This measure calculates the percentage of individuals who are "Compliant" 
+out of the total number of individuals who are required to complete a 
+Conflict of Interest (COI) disclosure.
+
+Logic:
+1. Counts the number of individuals where COI_REQUIRED is TRUE — these are 
+   the people expected to be compliant.
+2. Counts the number of individuals where CC_compliance = "Compliant".
+3. If there are no compliant individuals, returns a placeholder string "--".
+4. Otherwise, divides the number of compliant individuals by the number 
+   of required individuals to return a decimal value (as a percentage).
+
+Note: This measure returns a blank if the denominator (_required) is zero, 
+ensuring it avoids divide-by-zero errors.
+*/
+
+M_compliant_percentage = 
+VAR _required = 
+    CALCULATE(
+        COUNTROWS('MIDP_DIRECTORY_G'),
+        MIDP_DIRECTORY_G[COI_REQUIRED] = TRUE()
+    )
+VAR _compliant = 
+    CALCULATE(
+        COUNTROWS('MIDP_DIRECTORY_G'),
+        MIDP_DIRECTORY_G[CC_compliance] = "Compliant"
+    )
+RETURN
+    IF(
+        ISBLANK(_compliant),
+        "--",
+        DIVIDE(
+            _compliant, 
+            _required, 
+            BLANK()
+        )
+    )

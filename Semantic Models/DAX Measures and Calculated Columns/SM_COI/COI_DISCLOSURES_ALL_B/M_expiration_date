@@ -1,0 +1,40 @@
+/*
+Location: COI_DISCLOSURES_ALL_B table
+Explanation: 
+
+This measure calculates the expiration date of an individual's most recent 
+Conflict of Interest (COI) disclosure.
+
+Logic:
+1. Retrieves the individual's CSU_ID from the MIDP_DIRECTORY_G table.
+2. Finds the most recent COI disclosure submission date (UPDATED field) 
+   from the COI_DISCLOSURES_ALL_B table, filtered to:
+   - Only include rows where MOST_RECENT_SUBMIT_ACTION = TRUE()
+   - SCHOOL_ID matches the individual's CSU_ID
+3. If a disclosure date is found, adds 365 days to it to determine the expiration date.
+4. Returns:
+   - The calculated expiration date if available
+   - BLANK() if no disclosure was submitted
+
+This measure provides a standardized 1-year expiration window for each individual's 
+latest COI disclosure, used in compliance tracking.
+*/
+
+M_expiration_date = 
+VAR _netid = SELECTEDVALUE('MIDP_DIRECTORY_G'[CSU_ID])
+
+VAR _disclosure_date =
+CALCULATE(
+    MAX('COI_DISCLOSURES_ALL_B'[UPDATED]),
+    FILTER(
+        ALL('COI_DISCLOSURES_ALL_B'),
+        'COI_DISCLOSURES_ALL_B'[MOST_RECENT_SUBMIT_ACTION] = TRUE()
+            && 'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _netid
+    )
+)
+RETURN
+IF(
+    ISBLANK(_disclosure_date),
+    BLANK(),
+    _disclosure_date + 365
+)

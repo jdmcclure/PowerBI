@@ -8,7 +8,7 @@ It performs the following checks:
 - If the individual is required to submit a COI disclosure, it checks:
     - If there’s no expiration date, or
     - If the expiration date is before today
-    → Then, the individual is marked as "Not Compliant".
+        → Then, the individual is marked as "Not Compliant".
     - Otherwise, the individual is marked as "Compliant".
 If COI disclosure is not required, no compliance status is returned.
 */

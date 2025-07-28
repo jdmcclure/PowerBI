@@ -29,7 +29,9 @@ VAR _expired_most_recent =
     )
 RETURN
 IF(
-    _coi_required = TRUE() && _expired_most_recent > 0 && not 'MIDP_DIRECTORY_G'[DEPARTMENT_COMBINED] in {"0004", "0001"},
+    _coi_required = TRUE() 
+        && _expired_most_recent > 0 
+        && not 'MIDP_DIRECTORY_G'[DEPARTMENT_COMBINED] in {"0004", "0001"},
     TRUE(),
     FALSE()
 )

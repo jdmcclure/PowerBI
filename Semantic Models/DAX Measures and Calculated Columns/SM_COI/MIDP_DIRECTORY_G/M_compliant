@@ -1,0 +1,41 @@
+/*
+Location: MIDP_DIRECTORY_G table
+Explanation:
+This measure determines whether an individual is "Compliant" or "Not Compliant" 
+based on their Conflict of Interest (COI) disclosure status.
+
+Logic:
+1. Retrieves the individual's CSU_ID and whether they are required to submit a COI disclosure.
+2. Looks up the most recent expiration date for the individual's COI disclosure using their CSU_ID.
+3. If the individual is required to submit a COI disclosure:
+   - Returns "Not Compliant" if:
+     a. There is no expiration date found, OR
+     b. The expiration date is before today's date.
+   - Returns "Compliant" if the expiration date is today or in the future.
+4. If COI is not required, the measure returns a blank.
+
+Used to evaluate and label individuals based on their current COI compliance status.
+*/
+
+M_compliant = 
+
+VAR _csuid = SELECTEDVALUE('MIDP_DIRECTORY_G'[CSU_ID])
+
+VAR _coi_required = SELECTEDVALUE('MIDP_DIRECTORY_G'[COI_REQUIRED])
+
+VAR _expiration_date =
+    CALCULATE(
+        [M_expiration_date],
+        'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _csuid
+    )
+
+RETURN
+IF(
+    _coi_required = TRUE(),
+    SWITCH(
+        TRUE(),
+        ISBLANK(_expiration_date), "Not Compliant",
+        _expiration_date < TODAY(), "Not Compliant",
+        "Compliant"
+    )
+)

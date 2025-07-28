@@ -1,6 +1,6 @@
 /*
 Location: MIDP_DIRECTORY_G table
-Explanation: 
+Explanation: A simple sum of the working hours column.
 */
 
 M_assigned_working_hours = 

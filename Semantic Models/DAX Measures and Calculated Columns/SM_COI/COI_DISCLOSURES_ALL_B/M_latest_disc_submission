@@ -1,0 +1,40 @@
+/*
+Location: COI_DISCLOSURES_ALL_B table
+Explanation: 
+
+This measure returns the submission date of an individual's most recent 
+Conflict of Interest (COI) disclosure, formatted as "mm/dd/yyyy".
+
+Logic:
+1. Retrieves the individual's CSU_ID from the MIDP_DIRECTORY_G table.
+2. Searches the COI_DISCLOSURES_ALL_B table for the most recent disclosure record where:
+   - MOST_RECENT_SUBMIT_ACTION = TRUE()
+   - SCHOOL_ID matches the individual's CSU_ID
+3. Retrieves the UPDATED timestamp from the matching record.
+4. Returns:
+   - The submission date formatted as "mm/dd/yyyy" if found
+   - BLANK() if no disclosure has been submitted
+
+This measure is used to display the date of the most recent COI disclosure submission 
+for compliance tracking and audit purposes.
+*/
+
+M_latest_disc_submission = 
+
+VAR _netid = SELECTEDVALUE('MIDP_DIRECTORY_G'[CSU_ID])
+
+VAR _disc = 
+    CALCULATE(
+            MAX('COI_DISCLOSURES_ALL_B'[UPDATED]),
+            FILTER(
+                ALL('COI_DISCLOSURES_ALL_B'),
+                'COI_DISCLOSURES_ALL_B'[MOST_RECENT_SUBMIT_ACTION] = TRUE()
+                    && 'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _netid
+            )
+        )
+RETURN
+IF(
+    ISBLANK(_disc),
+    Blank(),
+    FORMAT(_disc, "mm/dd/yyyy")
+)

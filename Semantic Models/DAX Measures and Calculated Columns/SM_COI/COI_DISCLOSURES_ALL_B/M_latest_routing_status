@@ -1,0 +1,40 @@
+/*
+Location: COI_DISCLOSURES_ALL_B table
+Explanation: 
+
+This measure returns the routing status of an individual's most recent 
+Conflict of Interest (COI) disclosure.
+
+Logic:
+1. Retrieves the individual's CSU_ID from the MIDP_DIRECTORY_G table.
+2. Searches the COI_DISCLOSURES_ALL_B table for the most recent action where:
+   - MOST_RECENT_ACTION = TRUE()
+   - SCHOOL_ID matches the individual's CSU_ID
+3. Retrieves the ROUTING_STATUS from the matching record.
+4. Returns:
+   - The routing status (e.g., "Pending", "In Review", "Completed") if found
+   - BLANK() if no recent disclosure with routing data exists
+
+This measure is used to track the current step or stage in the COI disclosure 
+workflow for each individual.
+*/
+
+M_latest_routing_status = 
+
+VAR _netid = SELECTEDVALUE('MIDP_DIRECTORY_G'[CSU_ID])
+
+VAR _routing_status =
+CALCULATE(
+    MAX('COI_DISCLOSURES_ALL_B'[ROUTING_STATUS]),
+    FILTER(
+        ALL('COI_DISCLOSURES_ALL_B'),
+        'COI_DISCLOSURES_ALL_B'[MOST_RECENT_ACTION] = TRUE()
+            && 'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _netid
+    )
+)
+RETURN
+IF(
+    ISBLANK(_routing_status),
+    BLANK(),
+    _routing_status
+)

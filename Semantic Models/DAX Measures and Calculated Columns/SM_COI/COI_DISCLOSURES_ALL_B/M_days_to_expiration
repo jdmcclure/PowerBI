@@ -1,0 +1,59 @@
+/*
+Location: COI_DISCLOSURES_ALL_B table
+Explanation: 
+
+This measure calculates the number of days remaining until a user's Conflict of Interest (COI) disclosure expires,
+or indicates their current disclosure status.
+
+Logic:
+1. Retrieves the individual's CSU_ID from the MIDP_DIRECTORY_G table.
+2. Looks up the most recent COI disclosure submission date (UPDATED field) 
+   from the COI_DISCLOSURES_ALL_B table where:
+   - MOST_RECENT_SUBMIT_ACTION = TRUE()
+   - SCHOOL_ID matches the individual's CSU_ID
+3. Calculates an expiration date by adding 365 days to the most recent disclosure date.
+4. Calculates the number of days between today and the expiration date.
+5. Returns:
+   - "Not Started" if the disclosure approval status is "Not Started"
+   - "Expired" if the expiration date is in the past (i.e., days < 0)
+   - The number of days remaining (formatted with thousands separator) if available
+   - BLANK() if no applicable data is found
+
+This measure provides a user-friendly summary of how close a COI disclosure is to expiring,
+or if it’s already expired or not yet started.
+*/
+
+M_days_to_expiration = 
+VAR _status = MAX('COI_DISCLOSURES_ALL_B'[DISCLOSURE_APPROVAL_STATUS])
+VAR _netid = SELECTEDVALUE('MIDP_DIRECTORY_G'[CSU_ID])
+
+VAR _disclosure_date =
+    CALCULATE(
+        MAX('COI_DISCLOSURES_ALL_B'[UPDATED]),
+        FILTER(
+            ALL('COI_DISCLOSURES_ALL_B'),
+            'COI_DISCLOSURES_ALL_B'[MOST_RECENT_SUBMIT_ACTION] = TRUE()
+                && 'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _netid
+        )
+    )
+VAR _expiration_date = 
+    IF(
+        ISBLANK(_disclosure_date),
+        BLANK(),
+        _disclosure_date + 365
+    )
+VAR _days = 
+    IF(
+        NOT ISBLANK(_expiration_date),
+        DATEDIFF(TODAY(), _expiration_date, DAY),
+        BLANK()
+    )
+    
+RETURN
+SWITCH(
+        TRUE(),
+        _status = "Not Started", "Not Started",
+        _days < 0, "Expired",
+        NOT ISBLANK(_days), FORMAT(_days, "#,0"),
+        BLANK()
+    )

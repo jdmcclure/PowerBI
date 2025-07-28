@@ -1,5 +1,6 @@
 /*
 Location: MIDP_DIRECTORY_G table
+Explanation: A simple count of the directory table.
 */
 
 M_count_directory = 

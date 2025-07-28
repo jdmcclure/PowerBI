@@ -1,0 +1,41 @@
+/*
+Location: COI_DISCLOSURES_ALL_B table
+Explanation: 
+
+This measure returns the creation date and time of an individual's most recent 
+Conflict of Interest (COI) disclosure submission, formatted for display.
+
+Logic:
+1. Retrieves the individual's CSU_ID from the MIDP_DIRECTORY_G table.
+2. Searches the COI_DISCLOSURES_ALL_B table for the most recent submission where:
+   - MOST_RECENT_SUBMIT_ACTION = TRUE()
+   - SCHOOL_ID matches the individual's CSU_ID
+3. Retrieves the CREATED timestamp from the matching disclosure record.
+4. Returns:
+   - The created date/time in "mm/dd/yyyy HH:mm" format if a record is found
+   - "Not Started" if no matching disclosure exists
+
+This measure is useful for identifying when an individual's most recent 
+COI disclosure was initiated.
+*/
+
+M_latest_create_date = 
+
+VAR _netid = SELECTEDVALUE('MIDP_DIRECTORY_G'[CSU_ID])
+
+VAR _create_date =
+    CALCULATE(
+        MAX('COI_DISCLOSURES_ALL_B'[CREATED]),
+        FILTER(
+            ALL('COI_DISCLOSURES_ALL_B'),
+            'COI_DISCLOSURES_ALL_B'[MOST_RECENT_SUBMIT_ACTION] = TRUE()
+                && 'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _netid
+        )
+    )
+
+RETURN
+    IF(
+        ISBLANK(_create_date),
+        "Not Started",
+        FORMAT(_create_date, "mm/dd/yyyy HH:mm")
+    )

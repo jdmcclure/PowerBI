@@ -1,6 +1,6 @@
 /*
 Location: COI_DISCLOSURES_ALL_B table
-Explanation: 
+Explanation: A simple count of the disclosure table.
 */
 
 M_count_disclosures = COUNTROWS('COI_DISCLOSURES_ALL_B')

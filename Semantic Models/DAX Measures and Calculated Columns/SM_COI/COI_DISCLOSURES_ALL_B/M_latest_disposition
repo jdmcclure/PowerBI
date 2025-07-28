@@ -1,0 +1,40 @@
+/*
+Location: COI_DISCLOSURES_ALL_B table
+Explanation: 
+
+This measure returns the disposition status of an individual's most recent 
+Conflict of Interest (COI) disclosure.
+
+Logic:
+1. Retrieves the individual's CSU_ID from the MIDP_DIRECTORY_G table.
+2. Searches the COI_DISCLOSURES_ALL_B table for the most recent submission where:
+   - MOST_RECENT_SUBMIT_ACTION = TRUE()
+   - SCHOOL_ID matches the individual's CSU_ID
+3. Retrieves the DISPOSITION_STATUS from the matching record.
+4. Returns:
+   - The disposition status (e.g., "No Conflict", "Conflict Identified") if available
+   - BLANK() if no recent disclosure has been submitted
+
+This measure helps track the outcome or classification of the latest COI 
+submission for each individual.
+*/
+
+M_latest_disposition = 
+
+VAR _netid = SELECTEDVALUE('MIDP_DIRECTORY_G'[CSU_ID])
+
+VAR _disclosure_date =
+CALCULATE(
+    MAX('COI_DISCLOSURES_ALL_B'[DISPOSITION_STATUS]),
+    FILTER(
+        ALL('COI_DISCLOSURES_ALL_B'),
+        'COI_DISCLOSURES_ALL_B'[MOST_RECENT_SUBMIT_ACTION] = TRUE()
+            && 'COI_DISCLOSURES_ALL_B'[SCHOOL_ID] = _netid
+    )
+)
+RETURN
+IF(
+    ISBLANK(_disclosure_date),
+    BLANK(),
+    _disclosure_date
+)

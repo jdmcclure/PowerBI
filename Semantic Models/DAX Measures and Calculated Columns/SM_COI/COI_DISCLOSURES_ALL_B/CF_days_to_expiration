@@ -2,7 +2,7 @@
 Location: COI_DISCLOSURES_ALL_B table
 Explanation: 
 CF_days_to_expiration is a DAX measure that returns a color code based on how close an individual's 
-COI disclosure is to expiring. 
+COI disclosure is to expiring. The preceding CF_ flags it as a Conditional Formatting measure.
 It works like this:
     - Identifies the person via their CSU ID.
     - Retrieves the last updated date for their most recent submitted disclosure.
