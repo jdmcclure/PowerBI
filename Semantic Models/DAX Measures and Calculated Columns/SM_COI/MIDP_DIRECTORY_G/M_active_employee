@@ -1,0 +1,14 @@
+M_active_employee = 
+IF(
+    ISINSCOPE('COI_FINANCIAL_ENTITIES_B'[CSU_ID]),
+    VAR selected_id = MAX('COI_FINANCIAL_ENTITIES_B'[CSU_ID])
+    VAR active_name = 
+        LOOKUPVALUE(
+            'MIDP_DIRECTORY_G'[FULL_NAME],
+            'MIDP_DIRECTORY_G'[CSU_ID], 
+            selected_id
+        )
+    RETURN
+        IF(ISBLANK(active_name), "No", "Yes"),
+    BLANK()
+)
