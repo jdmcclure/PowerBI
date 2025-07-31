@@ -10,6 +10,7 @@ Key Inputs:
         -"2" → RCR Online
         -"1" → RCR Face-to-Face
         -"10" → COI Disclosure
+        -"16" → Research Security Training
     -NET_ID: Unique identifier for the individual.
 
 New Addition:
@@ -43,6 +44,18 @@ VAR _req_id = 'COMBINED_TRAINING'[REQ_ID]
 VAR _net_id = 'COMBINED_TRAINING'[NET_ID]
 
 // Expirations
+
+VAR _is_latest_training =
+    'COMBINED_TRAINING'[EXPIRATION_DATE] =
+        CALCULATE(
+            MAX('COMBINED_TRAINING'[EXPIRATION_DATE]),
+            FILTER(
+                'COMBINED_TRAINING',
+                'COMBINED_TRAINING'[REQ_ID] = _req_id &&
+                'COMBINED_TRAINING'[NET_ID] = _net_id
+            )
+        )
+
 VAR _rcr_expiration =
     CALCULATE(
         MAX('COMBINED_TRAINING'[EXPIRATION_DATE]),
@@ -100,60 +113,62 @@ VAR _rcr_nsf_scenario =
 
 // Compliance Logic
 RETURN
-SWITCH(
-    TRUE(),
+IF(
+    _is_latest_training,
+    SWITCH(
+        TRUE(),
 
-    // Special Case: RCR Online required and award is NSF or NIFA — Always Compliant if completed
-    _req_id = "2" && _rcr_nsf_scenario,
-        IF(
-            _rcr_required,
-            IF(NOT ISBLANK(_rcr_expiration), "Compliant", "Not Compliant"),
-            "Not Applicable"
-        ),
+        // Special Case: RCR Online required and award is NSF or NIFA — Always Compliant if completed
+        _req_id = "2" && _rcr_nsf_scenario,
+            IF(
+                _rcr_required,
+                IF(NOT ISBLANK(_rcr_expiration), "Compliant", "Not Compliant"),
+                "Not Applicable"
+            ),
 
-    _req_id = "2",
-        IF(
-            _rcr_required,
+        _req_id = "2",
             IF(
-                NOT ISBLANK(_rcr_expiration) && (_rcr_expiration >= TODAY() || _latest_payroll < _rcr_expiration), 
-                "Compliant",
-                "Not Compliant"
+                _rcr_required,
+                IF(
+                    NOT ISBLANK(_rcr_expiration) && (_rcr_expiration >= TODAY() || _latest_payroll < _rcr_expiration), 
+                    "Compliant",
+                    "Not Compliant"
+                ),
+                "Not Applicable"
             ),
-            "Not Applicable"
-        ),
 
-    _req_id = "1",
-        IF(
-            _rcr_f2f_required,
+        _req_id = "1",
             IF(
-                NOT ISBLANK(_rcr_f2f_expiration) && (_rcr_f2f_expiration >= TODAY() || _latest_payroll < _rcr_f2f_expiration), 
-                "Compliant", 
-                "Not Compliant"
+                _rcr_f2f_required,
+                IF(
+                    NOT ISBLANK(_rcr_f2f_expiration) && (_rcr_f2f_expiration >= TODAY() || _latest_payroll < _rcr_f2f_expiration), 
+                    "Compliant", 
+                    "Not Compliant"
+                ),
+                "Not Applicable"
             ),
-            "Not Applicable"
-        ),
 
-    _req_id = "10",
-        IF(
-            _coi_required,
+        _req_id = "10",
             IF(
-                NOT ISBLANK(_coi_expiration) && _coi_expiration >= TODAY(), 
-                "Compliant", 
-                "Not Compliant"
+                _coi_required,
+                IF(
+                    NOT ISBLANK(_coi_expiration) && _coi_expiration >= TODAY(), 
+                    "Compliant", 
+                    "Not Compliant"
+                ),
+                "Not Applicable"
             ),
-            "Not Applicable"
-        ),
-    
-    _req_id = "16",
-        IF(
-            _rst_required,
-            IF(
-                NOT ISBLANK(_rst_expiration) && _rst_expiration >= TODAY(), 
-                "Compliant", 
-                "Not Compliant"
-            ),
-            "Not Applicable"
-        ),
         
+        _req_id = "16",
+            IF(
+                _rst_required,
+                IF(
+                    NOT ISBLANK(_rst_expiration) && _rst_expiration >= TODAY(), 
+                    "Compliant", 
+                    "Not Compliant"
+                ),
+                "Not Applicable"
+            )
+    ),        
     BLANK()
 )
