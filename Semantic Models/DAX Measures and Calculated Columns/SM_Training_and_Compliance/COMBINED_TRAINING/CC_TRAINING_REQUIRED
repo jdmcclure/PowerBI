@@ -1,3 +1,30 @@
+/*
+Location: COMBINED_TRAINING table   
+This calculated column, CC_TRAINING_REQUIRED, determines whether a specific training is 
+required for a given individual based on their NET_ID and training REQ_ID. 
+
+It performs the following steps:
+
+    1. Retrieves the NET_ID and REQ_ID from the COMBINED_TRAINING table.
+    2. Uses the NET_ID to look up training requirement flags from the MIDP_DIRECTORY table:
+        - RCR_ONLINE_REQUIRED
+        - RCR_F2F_REQUIRED
+        - COI_REQUIRED
+        - RST_REQUIRED
+    3. Based on the REQ_ID value:
+        - "2" corresponds to RCR Online training
+        - "1" corresponds to RCR Face-to-Face training
+        - "10" corresponds to COI training
+        - "16" corresponds to RST training
+    4. For each REQ_ID, if the corresponding requirement flag is "True", the individual is 
+    marked as "Required", otherwise they are marked as "Not Required".
+    5. If none of the expected REQ_ID values match, the result is BLANK.
+
+This logic allows the report to show whether an individual is required to take a specific type 
+of training based on institutional compliance rules stored in the MIDP_DIRECTORY (calculated
+in the dataflow).
+*/
+
 CC_TRAINING_REQUIRED = 
 VAR _req_id = 'COMBINED_TRAINING'[REQ_ID]
 VAR _net_id = 'COMBINED_TRAINING'[NET_ID]
