@@ -1,0 +1,23 @@
+SUM = 
+SUMX(
+    'table',
+    SELECTEDMEASURE()
+)
+
+AVERAGE = 
+AVERAGEX(
+    'table',
+    SELECTEDMEASURE()
+)
+
+MIN = 
+MINX(
+    'table',
+    SELECTEDMEASURE()
+)
+
+MAX = 
+MAXX(
+    'table',
+    SELECTEDMEASURE()
+)

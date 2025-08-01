@@ -1,0 +1,65 @@
+/*
+This is a method for dynamic conditional formatting based on chosen calculation group.
+
+A dummy measure is needed for each column for this to work properly. Recommended you
+add the dummy measure into the calculation
+
+i.e. - CF_award_count = [M_award_count]
+Then select the table/visual -> Formatting Options -> Cell elements -> Background Color fx.
+    - Change format style to Rules in the dropdown.
+    - If value is 1 (number) then "Red"
+    - If value is 2 (number) then "Green"
+*/
+
+CF_highlight_min_and_max = 
+VAR _max_value =
+    MAXX(
+        ALLSELECTED('Calendar'[Year], 'Calendar'[Fiscal_Year], 'Calendar'[Quarter]),
+        SELECTEDMEASURE()
+    )
+
+VAR _min_value = 
+    MINX(
+        ALLSELECTED('Calendar'[Year], 'Calendar'[Fiscal_Year], 'Calendar'[Quarter]),
+        SELECTEDMEASURE()
+    )
+
+VAR _cf =
+    SWITCH(
+        SELECTEDMEASURE(),
+        _min_value, 1,
+        _max_value, 2, 
+        SELECTEDMEASURE()
+    )
+
+RETURN
+IF(
+    CONTAINSSTRING(SELECTEDMEASURE(), "CF"), // If measure name contains "CF"
+    _cf, //return _cf variable
+    SELECTEDMEASURE() //Otherwise return the selected measure
+)
+
+---------------------------------------------------------------------------------------
+/*
+Change to > _avg for above average.
+*/
+
+CF_below_average = 
+VAR _avg =
+    AVERAGEX(
+        ALLSELECTED('Calendar'[Year], 'Calendar'[Fiscal_Year], 'Calendar'[Quarter]),
+        SELECTEDMEASURE()
+    )
+VAR _cf = 
+    SWITCH(
+        TRUE(),
+        SELECTEDMEASURE() < _avg, 1,
+        SELECTEDMEASURE()
+    )
+
+RETURN
+IF(
+    CONTAINSSTRING(SELECTEDMEASURENAME(), "CF"),
+    _cf,
+    SELECTEDMEASURE()
+)

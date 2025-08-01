@@ -1,0 +1,8 @@
+Inactive Date = 
+CALCULATE(
+    SELECTEDMEASURE(),
+    USERELATIONSHIP(
+        'fact_table'[INACTIVE_DATE],
+        'Calendar'[Date]
+    )
+)
