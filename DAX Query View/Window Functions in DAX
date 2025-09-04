@@ -19,3 +19,63 @@ RETURN
         KEEP,
         PARTITIONBY ( 'Product'[Category] )
     )
+
+
+
+
+/*
+Personal use case example within the SM_training_and_compliance model
+Further windows functions to look into: INDEX, OFFSET, WINDOW, ROWNUMBER)
+*/
+
+VAR training_list = 
+	ADDCOLUMNS(
+		ALL(
+			'COMBINED_TRAINING'[NET_ID],
+			'COMBINED_TRAINING'[REQ_ID],
+            'COMBINED_TRAINING'[CC_COMPLIANCE_STATUS],
+            'COMBINED_TRAINING'[CC_TRAINING_REQUIRED]
+		),
+		"@Exp", [M_expiration_date]
+	)
+
+VAR _latest_training = 
+	INDEX(
+		1,
+		training_list,
+		ORDERBY( [@Exp], DESC),
+		PARTITIONBY('COMBINED_TRAINING'[NET_ID], 'COMBINED_TRAINING'[REQ_ID])
+	)
+
+
+-- Additional options for guaranteeing single row per pair
+
+/*
+Add tiebreakers (preferred):
+tie-breaking parameter only accepts
+    - KEEP: returns all rows tied at that position
+    - FIRST: returns the first row among ties
+    - LAST: returns the last row among ties
+    - DEFAULT: equivalent to KEEP
+*/
+VAR _latest_training =
+    INDEX(
+        1,
+        compliance_by_training,
+        ORDERBY( [@Exp], DESC,
+                 'COMBINED_TRAINING'[EFFECTIVE_DATE], DESC,
+                 'COMBINED_TRAINING'[SRC_ID], ASC ),
+        FIRST,
+        PARTITIONBY('COMBINED_TRAINING'[NET_ID], 'COMBINED_TRAINING'[REQ_ID])
+    )
+-- Use rownumber and filter
+VAR ranked =
+    ADDCOLUMNS(
+        compliance_by_training,
+        "@rn",
+            ROWNUMBER(
+                PARTITIONBY('COMBINED_TRAINING'[NET_ID], 'COMBINED_TRAINING'[REQ_ID]),
+                ORDERBY([@Exp], DESC)
+            )
+    )
+VAR _latest_training = FILTER(ranked, [@rn] = 1)
