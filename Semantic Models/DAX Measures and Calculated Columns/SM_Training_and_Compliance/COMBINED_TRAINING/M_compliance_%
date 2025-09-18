@@ -1,16 +1,44 @@
 M_compliance_% = 
-VAR _current_status = "Compliant"
+-- Generate virtual table of only most recent training record for each REQ_ID and NET_ID combination using windows functions
+
+VAR compliance_by_training = 
+	ADDCOLUMNS(
+		ALL(
+			'COMBINED_TRAINING'[NET_ID],
+			'COMBINED_TRAINING'[REQ_ID],
+            'COMBINED_TRAINING'[CC_COMPLIANCE_STATUS],
+            'COMBINED_TRAINING'[CC_TRAINING_REQUIRED]
+		),
+		"@Exp", [M_expiration_date]
+	)
+VAR _latest_training = 
+	INDEX(
+		1,
+		compliance_by_training,
+		ORDERBY( [@Exp], DESC),
+		KEEP,
+		PARTITIONBY('COMBINED_TRAINING'[NET_ID], 'COMBINED_TRAINING'[REQ_ID])
+	)
+
+
+-- Count rows that are compliant
 VAR _status_count =
-    CALCULATE(
-        COUNTROWS('COMBINED_TRAINING'),
-        'COMBINED_TRAINING'[CC_COMPLIANCE_STATUS] = _current_status
+    COUNTROWS(
+        FILTER(
+            _latest_training, 
+            [CC_COMPLIANCE_STATUS] = "Compliant"
+        )
     )
 
+-- Count rows that are required
 VAR _totalTracked =
-    CALCULATE(
-        COUNTROWS('COMBINED_TRAINING'),
-        'COMBINED_TRAINING'[CC_TRAINING_REQUIRED] = "Required"
+    COUNTROWS(
+        FILTER(
+            _latest_training,
+            [CC_TRAINING_REQUIRED] = "Required"
+        )
     )
 
 RETURN
+    -- Divide the compliant by the required
     DIVIDE(_status_count, _totalTracked, 0)

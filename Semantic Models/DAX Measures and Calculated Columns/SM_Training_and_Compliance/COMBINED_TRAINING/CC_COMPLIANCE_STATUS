@@ -1,3 +1,4 @@
+CC_COMPLIANCE_STATUS = 
 /*
 Location: COMBINED_TRAINING table
 Explanation:
@@ -39,12 +40,10 @@ Compliance Logic:
             -"Not Applicable" if the requirement does not apply to the individual.
 */
 
-CC_COMPLIANCE_STATUS = 
 VAR _req_id = 'COMBINED_TRAINING'[REQ_ID]
 VAR _net_id = 'COMBINED_TRAINING'[NET_ID]
 
-// Expirations
-
+--
 VAR _is_latest_training =
     'COMBINED_TRAINING'[EXPIRATION_DATE] =
         CALCULATE(
@@ -56,6 +55,7 @@ VAR _is_latest_training =
             )
         )
 
+-- Expiration dates
 VAR _rcr_expiration =
     CALCULATE(
         MAX('COMBINED_TRAINING'[EXPIRATION_DATE]),
@@ -113,8 +113,6 @@ VAR _rcr_nsf_scenario =
 
 // Compliance Logic
 RETURN
-IF(
-    _is_latest_training,
     SWITCH(
         TRUE(),
 
@@ -122,7 +120,11 @@ IF(
         _req_id = "2" && _rcr_nsf_scenario,
             IF(
                 _rcr_required,
-                IF(NOT ISBLANK(_rcr_expiration), "Compliant", "Not Compliant"),
+                IF(
+                    NOT ISBLANK(_rcr_expiration), 
+                    "Compliant", 
+                    "Not Compliant"
+                ),
                 "Not Applicable"
             ),
 
@@ -168,7 +170,6 @@ IF(
                     "Not Compliant"
                 ),
                 "Not Applicable"
-            )
-    ),        
-    BLANK()
-)
+            ),
+        BLANK()
+    )
