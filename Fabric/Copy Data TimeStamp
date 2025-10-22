@@ -1,0 +1,8 @@
+# Add column to table providing a date and time the data was uploaded to Fabric.
+Fabric does not seem to currently support the conversion, but keeping the function in here for future reference. In the meantime, just use UTC time and that can be converted further down the line.
+
+# function to convert to MST
+@convertFromUtc(utcNow(), 'Mountain Standard Time')
+
+# regular UTC timestamp
+@utcNow()
