@@ -1,0 +1,5 @@
+sponsor_helper_table = 
+UNION (
+    SELECTCOLUMNS('eps_proposal', "PROPOSAL_ID", 'eps_proposal'[PROPOSAL_NUMBER], "SPONSOR_CODE", 'eps_proposal'[SPONSOR_CODE]),
+    SELECTCOLUMNS('eps_proposal', "PROPOSAL_ID", 'eps_proposal'[PROPOSAL_NUMBER], "SPONSOR_CODE", 'eps_proposal'[PRIME_SPONSOR_CODE])
+)

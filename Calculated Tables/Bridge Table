@@ -1,0 +1,7 @@
+sponsor_bridge = 
+DISTINCT(
+    UNION (
+    SELECTCOLUMNS(sponsor, "SPONSOR_CODE", sponsor[SPONSOR_CODE], "SPONSOR_NAME", sponsor[SPONSOR_NAME]),
+    SELECTCOLUMNS(sponsor_prime, "SPONSOR_CODE", sponsor_prime[SPONSOR_CODE], "SPONSOR_NAME", sponsor_prime[SPONSOR_NAME])
+    )
+)
