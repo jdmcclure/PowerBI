@@ -1,2 +1,0 @@
--- Extract year from date field
-EXTRACT(YEAR FROM CREATED) AS DISCLOSURE_YEAR

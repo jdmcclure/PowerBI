@@ -1,9 +1,0 @@
-SELECT 
-	UNIT_NUMBER,
-    COUNT(*)
-FROM 
-    unit
-GROUP BY 
-    UNIT_NUMBER
-HAVING 
-    COUNT(*) > 1
