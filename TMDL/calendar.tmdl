@@ -1,0 +1,359 @@
+createOrReplace
+
+	table calendar
+		lineageTag: 1740ac93-0e9c-4ecb-bb77-2778b2d5f598
+
+		/// Date column formatted as 'mm/dd/yyyy'. Primary key for calendar table.
+		column Date
+			dataType: dateTime
+			formatString: mm/dd/yyyy
+			sourceProviderType: date
+			lineageTag: 8a854dcc-8620-4b83-8af2-183a414b07e1
+			summarizeBy: none
+			sourceColumn: Date
+
+			annotation SummarizationSetBy = Automatic
+
+			annotation UnderlyingDateTimeDataType = Date
+
+		/// Calendar year which runs 01/01 to 12/31.
+		column CY_Year
+			dataType: int64
+			formatString: 0
+			lineageTag: 072e2499-1835-4850-9013-87fc902d75e8
+			summarizeBy: none
+			sourceColumn: CY_Year
+
+			changedProperty = SummarizeBy
+
+			annotation SummarizationSetBy = User
+
+		/// Fiscal year which runs from 07/01 to 06/30. 
+		column FY_Year
+			dataType: int64
+			formatString: 0
+			lineageTag: 793121d3-5bc7-41b5-bedd-2f85c794b1a1
+			summarizeBy: none
+			sourceColumn: FY_Year
+
+			changedProperty = SummarizeBy
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Calendar year shortened (i.e. '2022' is '22') for visualization labels.
+		column CY_Short
+			dataType: string
+			lineageTag: 7c0f7af0-a834-4109-976e-05e7acadb385
+			summarizeBy: none
+			sourceColumn: CY_Short
+			sortByColumn: CY_Year
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Fiscal year shortened (i.e. '2022' is '22') for visualization labels.
+		column FY_Short
+			dataType: string
+			lineageTag: ffaac5be-73db-4bf0-8174-da6f0271802b
+			summarizeBy: none
+			sourceColumn: FY_Short
+			sortByColumn: FY_Year
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Calendar year month in number format. Used to sort the CY_Month column properly. 
+		column CY_Month_Num
+			dataType: int64
+			isHidden
+			formatString: 0
+			lineageTag: 7da4fac2-2d99-4be3-b715-3bd82570b1ce
+			summarizeBy: none
+			sourceColumn: CY_Month_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = User
+
+		/// Month of calendar year formatted into 3 letters (i.e. - Jun) , ordered respectively by calendar year.
+		column CY_Month
+			dataType: string
+			lineageTag: 20dfc437-3eb6-4307-a727-f09fe6c3a424
+			summarizeBy: none
+			sourceColumn: CY_Month
+			sortByColumn: CY_Month_Num
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Calendar year month and year in format mmm-yy (i.e. - Jun-22 for June of 2022). 
+		column CY_Month_Year
+			dataType: string
+			isHidden
+			lineageTag: 36a50fff-9c2c-4df2-ad96-cba1e228b49f
+			summarizeBy: none
+			sourceColumn: CY_Month_Year
+			sortByColumn: CY_Month_Year_Num
+
+			changedProperty = SortByColumn
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Calendar month and year formatted as a number. Used for sorting the CY_Month_Year column. 
+		column CY_Month_Year_Num
+			dataType: int64
+			formatString: 0
+			lineageTag: 29e1dcdf-280f-4237-b384-efeacdacf179
+			summarizeBy: none
+			sourceColumn: CY_Month_Year_Num
+
+			annotation SummarizationSetBy = User
+
+		/// Fiscal year month number. Used for sorting the FY_Month column properly.
+		column FY_Month_Num
+			dataType: int64
+			isHidden
+			formatString: 0
+			lineageTag: eab616c6-e01c-482d-bb49-e2c2704ef3c0
+			summarizeBy: none
+			sourceColumn: FY_Month_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = User
+
+		/// Federal fiscal month formatted as text. (e.g. - 5 is '05')
+		column Fiscal_Period
+			dataType: string
+			lineageTag: 5de2ad1c-39a2-441d-8e67-24b67ecfa6d6
+			summarizeBy: none
+			sourceColumn: Fiscal_Period
+			sortByColumn: FY_Month_Num
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Fiscal year month formatted as 3 letters. (e.g. - 'December' is 'Dec')
+		column FY_Month
+			dataType: string
+			lineageTag: b6791c96-192d-421b-882b-fb0bb84ea1b8
+			summarizeBy: none
+			sourceColumn: FY_Month
+			sortByColumn: FY_Month_Num
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Federal fiscal year which runs from 10/01 to 09/30
+		column Federal_Fiscal_Year
+			dataType: int64
+			formatString: 0
+			lineageTag: d91c83a3-7263-4b93-8e28-0ca6177aae7b
+			summarizeBy: none
+			sourceColumn: Federal_Fiscal_Year
+
+			annotation SummarizationSetBy = User
+
+		/// Week number of the calendar year
+		column Week_of_Year
+			dataType: int64
+			formatString: 0
+			lineageTag: 56487729-e370-474c-a1d7-9be319b7ee93
+			summarizeBy: none
+			sourceColumn: Week_of_Year
+
+			annotation SummarizationSetBy = User
+
+		/// Day of the week as a number for sorting the Day_of_Week column properly.
+		/// Sun = 0, Sat = 6
+		column Day_of_Week_Num
+			dataType: int64
+			isHidden
+			formatString: 0
+			lineageTag: 019e0afa-f178-4867-b4aa-e80a9d343ad9
+			summarizeBy: none
+			sourceColumn: Day_of_Week_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = User
+
+		/// Day of the week formatted into 3 letters. (e.g. - 'Monday' is 'Mon')
+		column Day_of_Week
+			dataType: string
+			lineageTag: 3a5bd4dc-761e-4182-ab0a-3a28ba2ada51
+			summarizeBy: none
+			sourceColumn: Day_of_Week
+			sortByColumn: Day_of_Week_Num
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Day of the calendar year.
+		column Day_of_Year
+			dataType: int64
+			formatString: 0
+			lineageTag: 8e0d59fa-8c84-4f48-93f9-69afbf91f4af
+			summarizeBy: none
+			sourceColumn: Day_of_Year
+
+			annotation SummarizationSetBy = User
+
+		/// Boolean marking weekdays as 'TRUE' and weekends as 'FALSE'
+		column Is_Weekday
+			dataType: boolean
+			formatString: """TRUE"";""TRUE"";""FALSE"""
+			lineageTag: 7a598119-746a-4f35-af0d-e7378b584882
+			summarizeBy: none
+			sourceColumn: Is_Weekday
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Boolean marking all dates in the last 5 and current fiscal year as 'TRUE', all else as 'FALSE'
+		/// Used for filtering page to a reasonable timeframe.
+		column Last_5_and_Current_FY
+			dataType: boolean
+			formatString: """TRUE"";""TRUE"";""FALSE"""
+			lineageTag: fdcf78bf-e44e-4dbe-92e4-d47d767e77cb
+			summarizeBy: none
+			sourceColumn: Last_5_and_Current_FY
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Calendar year quarter formatted as "Q1". 
+		/// Q1: 01/01 to 03/31
+		/// Q2: 04/01 and 06/30
+		/// Q3: 07/01 and 09/30
+		/// Q4: 10/01 and 12/31
+		column CY_Quarter
+			dataType: string
+			lineageTag: e28f3839-af92-4830-aab8-b9bbf74d92a1
+			summarizeBy: none
+			sourceColumn: CY_Quarter
+			sortByColumn: CY_Quarter_Num
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Fiscal year quarter formatted as "Q1".
+		/// Q1: 07/01 to 09/30
+		/// Q2: 10/01 to 12/31
+		/// Q3: 01/01 to 03/31
+		/// Q4: 04/01 to 06/30
+		column FY_Quarter
+			dataType: string
+			lineageTag: 78b67c8c-99a9-45a9-9e6c-ee394b992519
+			summarizeBy: none
+			sourceColumn: FY_Quarter
+			sortByColumn: FY_Quarter_Num
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Calendar year quarter as number. Used for sorting the CY_Quarter column properly.
+		column CY_Quarter_Num
+			dataType: double
+			isHidden
+			lineageTag: 6ec7fe4c-7843-4a52-9192-dd30a1b110a9
+			summarizeBy: none
+			sourceColumn: CY_Quarter_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = User
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		/// Fiscal year quarter as number. Used for sorting the FY_Quarter column properly.
+		column FY_Quarter_Num
+			dataType: int64
+			isHidden
+			formatString: 0
+			lineageTag: ec81a4d0-b45a-4196-b1b7-f567b1738abb
+			summarizeBy: none
+			sourceColumn: FY_Quarter_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = User
+
+		/// Fiscal year month and year (e.g. 'Nov-22')
+		column FY_Month_Year
+			dataType: string
+			lineageTag: 65be3caf-cb44-429e-bda1-6eb553e30d07
+			summarizeBy: none
+			sourceColumn: FY_Month_Year
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Fiscal year month and year as number. Used for sorting the FY_Month_Year column properly. 
+		column FY_Month_Year_Num
+			dataType: int64
+			formatString: 0
+			lineageTag: 2ffe0659-304a-4391-8c67-bcca2d7911c9
+			summarizeBy: none
+			sourceColumn: FY_Month_Year_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = User
+
+		/// Fiscal year quarter and year (e.g. 'Q2-22' is Quarter 2 of 2022 or 10/01/2022 to 12/31/2022)
+		column FY_Quarter_Year
+			dataType: string
+			lineageTag: 99b230c0-9302-4009-8135-7726c20d781c
+			summarizeBy: none
+			sourceColumn: FY_Quarter_Year
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Fiscal year quarter and year as number. Used for sorting FY_Quarter_Year column properly. 
+		column FY_Quarter_Year_Num
+			dataType: int64
+			formatString: 0
+			lineageTag: d1d0f91f-234f-4714-b613-b023a60ffd91
+			summarizeBy: none
+			sourceColumn: FY_Quarter_Year_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = User
+
+		/// Calendar year quarter and year (e.g. 'Q2-22' is Quarter 2 of 2022 or 04/01/2022 to 06/30/2022)
+		column CY_Quarter_Year
+			dataType: string
+			lineageTag: 472359b2-a6b0-46e0-a0f0-f1daf6a07d10
+			summarizeBy: none
+			sourceColumn: CY_Quarter_Year
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Calendar year quarter and year as number. Used for sorting CY_Quarter_Year column properly. 
+		column CY_Quarter_Year_Num
+			dataType: double
+			lineageTag: 2a501d63-ae23-4781-aa53-b3d657654834
+			summarizeBy: none
+			sourceColumn: CY_Quarter_Year_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = User
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		partition calendar = m
+			mode: import
+			source =
+					let
+					    Source = Sql.Database("akelll3276yuxkzbgz77f3h4rm-vu3ae6b6lp7ermd2na6t75iyau.datawarehouse.fabric.microsoft.com", "RIT_RS_Reporting_Lakehouse"),
+					    dbo_calendar = Source{[Schema="dbo",Item="calendar"]}[Data]
+					in
+					    dbo_calendar
+
+		annotation PBI_NavigationStepName = Navigation
+
+		annotation PBI_ResultType = Table
