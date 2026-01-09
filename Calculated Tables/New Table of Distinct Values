@@ -1,0 +1,4 @@
+SUMMARIZECOLUMNS(
+    'table'[column_name],
+    'table2'[column_name]
+)
