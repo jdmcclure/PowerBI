@@ -2,3 +2,19 @@ SUMMARIZECOLUMNS(
     'table'[column_name],
     'table2'[column_name]
 )
+
+
+
+// Summarize and filter columns, then rename columns
+pd_types = 
+SELECTCOLUMNS(
+    FILTER(
+        SUMMARIZECOLUMNS(
+            'eps_proposal'[PROPOSAL_NUMBER],
+            'proposal_type'[DESCRIPTION]
+        ),
+        NOT(ISBLANK([PROPOSAL_NUMBER])) && [PROPOSAL_NUMBER] <> ""
+    ),
+    "PD_NUMBER", [PROPOSAL_NUMBER],
+    "PD_TYPE", [DESCRIPTION]
+)
