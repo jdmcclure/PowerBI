@@ -1,0 +1,1 @@
+M_last_refresh_text = "Last Refresh" & UNICHAR(10) & FORMAT(MAX('last_refresh'[America/Denver]), "mm/dd/yyyy hh:mm AM/PM")
