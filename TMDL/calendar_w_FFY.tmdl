@@ -1,0 +1,582 @@
+createOrReplace
+
+	/// Calendar dimension table with one row per calendar day.
+	/// Grain: one row per date.
+	/// Serves as the primary date dimension; relates to fact tables via the Date column (primary key).
+	/// All columns are imported directly from the data warehouse — none are DAX calculated columns.
+	///
+	/// Fiscal year (FY) definition: July 1 – June 30.
+	///   e.g. FY2024 = July 1 2023 – June 30 2024.
+	///
+	/// Federal fiscal year (FFY) definition: October 1 – September 30.
+	///   e.g. FFY2024 = October 1 2023 – September 30 2024.
+	///
+	/// "Last 5 and Current" flags: True if the date falls within the current
+	/// year or any of the 5 most recently completed years of that year type.
+	table calendar
+
+		/// ── Calendar Year Columns ────────────────────────────────────────────
+
+		/// Primary key. One row per calendar day. Relates to fact tables via this column.
+		/// Source column from DW.
+		column Date
+			dataType: dateTime
+			formatString: Long Date
+			summarizeBy: none
+			sourceColumn: Date
+
+			annotation SummarizationSetBy = Automatic
+
+			annotation UnderlyingDateTimeDataType = Date
+
+		/// Calendar year number (e.g. 2024).
+		/// Source column from DW.
+		column CY_Year
+			dataType: int64
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: CY_Year
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Calendar year shortened to 2 digits (e.g. 2020 → "20").
+		/// Source column from DW.
+		column CY_Short
+			dataType: string
+			summarizeBy: none
+			sourceColumn: CY_Short
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Calendar quarter label (e.g. "Q1").
+		/// Sorted by CY_Quarter_Num.
+		/// Source column from DW.
+		column CY_Quarter
+			dataType: string
+			summarizeBy: none
+			sourceColumn: CY_Quarter
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Numeric sort key for CY_Quarter.
+		/// Source column from DW.
+		column CY_Quarter_Num
+			dataType: double
+			summarizeBy: none
+			sourceColumn: CY_Quarter_Num
+
+			annotation SummarizationSetBy = Automatic
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		/// Calendar quarter and year label (e.g. "Q1 2024").
+		/// Sorted by CY_Quarter_Year_Num.
+		/// Source column from DW.
+		column CY_Quarter_Year
+			dataType: string
+			summarizeBy: none
+			sourceColumn: CY_Quarter_Year
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Numeric sort key for CY_Quarter_Year.
+		/// Source column from DW.
+		column CY_Quarter_Year_Num
+			dataType: double
+			summarizeBy: none
+			sourceColumn: CY_Quarter_Year_Num
+
+			annotation SummarizationSetBy = Automatic
+
+			annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+		/// Hidden numeric sort key for CY_Month.
+		/// Source column from DW.
+		column CY_Month_Num
+			dataType: int64
+			isHidden
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: CY_Month_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Calendar month name (e.g. "January").
+		/// Sorted by CY_Month_Num.
+		/// Source column from DW.
+		column CY_Month
+			dataType: string
+			summarizeBy: none
+			sourceColumn: CY_Month
+			sortByColumn: CY_Month_Num
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Hidden numeric sort key for CY_Month_Year.
+		/// Source column from DW.
+		column CY_Month_Year_Num
+			dataType: int64
+			isHidden
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: CY_Month_Year_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Calendar month and year label (e.g. "January 2024").
+		/// Sorted by CY_Month_Year_Num.
+		/// Source column from DW.
+		column CY_Month_Year
+			dataType: string
+			summarizeBy: none
+			sourceColumn: CY_Month_Year
+			sortByColumn: CY_Month_Year_Num
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// True if the date falls within the current calendar year.
+		/// True = current calendar year / False = not current calendar year.
+		/// Source column from DW.
+		column Is_Current_CY
+			dataType: boolean
+			formatString: """TRUE"";""TRUE"";""FALSE"""
+			summarizeBy: none
+			sourceColumn: Is_Current_CY
+
+			annotation SummarizationSetBy = Automatic
+
+		/// ── Fiscal Year (FY) Columns — July 1 – June 30 ─────────────────────
+
+		/// Fiscal year number (e.g. FY2024 = July 1 2023 – June 30 2024).
+		/// Source column from DW.
+		column FY_Year
+			dataType: int64
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: FY_Year
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Fiscal year shortened to 2 digits (e.g. FY2020 → "20").
+		/// Source column from DW.
+		column FY_Short
+			dataType: string
+			summarizeBy: none
+			sourceColumn: FY_Short
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Fiscal year quarter label (e.g. "Q1").
+		/// Sorted by FY_Quarter_Num.
+		/// Source column from DW.
+		column FY_Quarter
+			dataType: string
+			summarizeBy: none
+			sourceColumn: FY_Quarter
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Numeric sort key for FY_Quarter.
+		/// Source column from DW.
+		column FY_Quarter_Num
+			dataType: int64
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: FY_Quarter_Num
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Fiscal quarter and year label (e.g. "Q1 FY2024").
+		/// Sorted by FY_Quarter_Year_Num.
+		/// Source column from DW.
+		column FY_Quarter_Year
+			dataType: string
+			summarizeBy: none
+			sourceColumn: FY_Quarter_Year
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Numeric sort key for FY_Quarter_Year.
+		/// Source column from DW.
+		column FY_Quarter_Year_Num
+			dataType: int64
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: FY_Quarter_Year_Num
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Hidden numeric sort key for FY_Month and Fiscal_Period.
+		/// Source column from DW.
+		column FY_Month_Num
+			dataType: int64
+			isHidden
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: FY_Month_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Fiscal month name. Runs July–June.
+		/// Sorted by FY_Month_Num.
+		/// Source column from DW.
+		column FY_Month
+			dataType: string
+			summarizeBy: none
+			sourceColumn: FY_Month
+			sortByColumn: FY_Month_Num
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Fiscal period identifier. Equivalent to FY_Month_Num in string form.
+		/// Sorted by FY_Month_Num.
+		/// Source column from DW.
+		column Fiscal_Period
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Fiscal_Period
+			sortByColumn: FY_Month_Num
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Fiscal month and year label (e.g. "July 2023").
+		/// Sorted by FY_Month_Year_Num.
+		/// Source column from DW.
+		column FY_Month_Year
+			dataType: string
+			summarizeBy: none
+			sourceColumn: FY_Month_Year
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Numeric sort key for FY_Month_Year.
+		/// Source column from DW.
+		column FY_Month_Year_Num
+			dataType: int64
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: FY_Month_Year_Num
+
+			annotation SummarizationSetBy = Automatic
+
+		/// True if the date falls within the current fiscal year (July 1 – June 30).
+		/// True = current FY / False = not current FY.
+		/// Source column from DW.
+		column Is_Current_FY
+			dataType: boolean
+			formatString: """TRUE"";""TRUE"";""FALSE"""
+			summarizeBy: none
+			sourceColumn: Is_Current_FY
+
+			annotation SummarizationSetBy = Automatic
+
+		/// True if the date falls within the previous fiscal year (July 1 – June 30).
+		/// True = last FY / False = not last FY.
+		/// Source column from DW.
+		column Is_Last_FY
+			dataType: boolean
+			formatString: """TRUE"";""TRUE"";""FALSE"""
+			summarizeBy: none
+			sourceColumn: Is_Last_FY
+
+			annotation SummarizationSetBy = Automatic
+
+		/// True if the date falls within the current FY or any of the 5 most recently completed fiscal years.
+		/// True = within range / False = outside range.
+		/// Useful for pre-filtering report pages to a rolling 6-year window.
+		/// Source column from DW.
+		column Last_5_and_Current_FY
+			dataType: boolean
+			formatString: """TRUE"";""TRUE"";""FALSE"""
+			summarizeBy: none
+			sourceColumn: Last_5_and_Current_FY
+
+			annotation SummarizationSetBy = Automatic
+
+		/// ── Federal Fiscal Year (FFY) Columns — October 1 – September 30 ────
+
+		/// Federal fiscal year number (e.g. FFY2024 = October 1 2023 – September 30 2024).
+		/// Source column from DW.
+		column FFY_Year
+			dataType: int64
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: FFY_Year
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Federal fiscal year shortened to 2 digits (e.g. FFY2020 → "20").
+		/// Sorted by FFY_Year.
+		/// Source column from DW.
+		column FFY_Short
+			dataType: string
+			summarizeBy: none
+			sourceColumn: FFY_Short
+			sortByColumn: FFY_Year
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Federal fiscal quarter label (e.g. "Q1").
+		/// Sorted by FFY_Quarter_Num.
+		/// Source column from DW.
+		column FFY_Quarter
+			dataType: string
+			summarizeBy: none
+			sourceColumn: FFY_Quarter
+			sortByColumn: FFY_Quarter_Num
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Hidden numeric sort key for FFY_Quarter.
+		/// Source column from DW.
+		column FFY_Quarter_Num
+			dataType: int64
+			isHidden
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: FFY_Quarter_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Federal fiscal quarter and year label (e.g. "Q1 FFY2024").
+		/// Sorted by FFY_Quarter_Year_Num.
+		/// Source column from DW.
+		column FFY_Quarter_Year
+			dataType: string
+			summarizeBy: none
+			sourceColumn: FFY_Quarter_Year
+			sortByColumn: FFY_Quarter_Year_Num
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Hidden numeric sort key for FFY_Quarter_Year.
+		/// Source column from DW.
+		column FFY_Quarter_Year_Num
+			dataType: int64
+			isHidden
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: FFY_Quarter_Year_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Hidden numeric sort key for FFY_Month.
+		/// Source column from DW.
+		column FFY_Month_Num
+			dataType: int64
+			isHidden
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: FFY_Month_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Federal fiscal month name. Runs October–September.
+		/// Sorted by FFY_Month_Num.
+		/// Source column from DW.
+		column FFY_Month
+			dataType: string
+			summarizeBy: none
+			sourceColumn: FFY_Month
+			sortByColumn: FFY_Month_Num
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Federal fiscal month and year label (e.g. "October 2023").
+		/// Sorted by FFY_Month_Year_Num.
+		/// Source column from DW.
+		column FFY_Month_Year
+			dataType: string
+			summarizeBy: none
+			sourceColumn: FFY_Month_Year
+			sortByColumn: FFY_Month_Year_Num
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Hidden numeric sort key for FFY_Month_Year.
+		/// Source column from DW.
+		column FFY_Month_Year_Num
+			dataType: int64
+			isHidden
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: FFY_Month_Year_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = Automatic
+
+		/// True if the date falls within the current federal fiscal year (October 1 – September 30).
+		/// True = current FFY / False = not current FFY.
+		/// Source column from DW.
+		column Is_Current_FFY
+			dataType: boolean
+			formatString: """TRUE"";""TRUE"";""FALSE"""
+			summarizeBy: none
+			sourceColumn: Is_Current_FFY
+
+			annotation SummarizationSetBy = Automatic
+
+		/// True if the date falls within the previous federal fiscal year (October 1 – September 30).
+		/// True = last FFY / False = not last FFY.
+		/// Source column from DW.
+		column Is_Last_FFY
+			dataType: boolean
+			formatString: """TRUE"";""TRUE"";""FALSE"""
+			summarizeBy: none
+			sourceColumn: Is_Last_FFY
+
+			annotation SummarizationSetBy = Automatic
+
+		/// True if the date falls within the current FFY or any of the 5 most recently completed federal fiscal years.
+		/// True = within range / False = outside range.
+		/// Useful for pre-filtering report pages to a rolling 6-year window.
+		/// Source column from DW.
+		column Last_5_and_Current_FFY
+			dataType: boolean
+			formatString: """TRUE"";""TRUE"";""FALSE"""
+			summarizeBy: none
+			sourceColumn: Last_5_and_Current_FFY
+
+			annotation SummarizationSetBy = Automatic
+
+		/// ── Day / Week Columns ───────────────────────────────────────────────
+
+		/// Week of the year (calendar year basis).
+		/// Source column from DW.
+		column Week_of_Year
+			dataType: int64
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: Week_of_Year
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Hidden numeric sort key for Day_of_Week.
+		/// Source column from DW.
+		column Day_of_Week_Num
+			dataType: int64
+			isHidden
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: Day_of_Week_Num
+
+			changedProperty = IsHidden
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Day of the week name (e.g. "Monday").
+		/// Sorted by Day_of_Week_Num.
+		/// Source column from DW.
+		column Day_of_Week
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Day_of_Week
+			sortByColumn: Day_of_Week_Num
+
+			changedProperty = SortByColumn
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Day of the year (calendar year basis, 1–365/366).
+		/// Source column from DW.
+		column Day_of_Year
+			dataType: int64
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: Day_of_Year
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Number of days from today. Negative = past, positive = future, 0 = today.
+		/// Source column from DW.
+		column Days_from_Today
+			dataType: int64
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: Days_from_Today
+
+			annotation SummarizationSetBy = Automatic
+
+		/// Number of months from today. Negative = past, positive = future, 0 = current month.
+		/// Source column from DW.
+		column Months_from_Today
+			dataType: int64
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: Months_from_Today
+
+			annotation SummarizationSetBy = Automatic
+
+		/// ── Flags ────────────────────────────────────────────────────────────
+
+		/// True if the date is a weekday (Mon–Fri).
+		/// True = weekday / False = weekend.
+		/// Source column from DW.
+		column Is_Weekday
+			dataType: boolean
+			formatString: """TRUE"";""TRUE"";""FALSE"""
+			summarizeBy: none
+			sourceColumn: Is_Weekday
+
+			annotation SummarizationSetBy = Automatic
+
+		/// True if the date is a university holiday.
+		/// True = holiday / False = not a holiday.
+		/// Source column from DW.
+		column Is_Holiday
+			dataType: boolean
+			formatString: """TRUE"";""TRUE"";""FALSE"""
+			summarizeBy: none
+			sourceColumn: Is_Holiday
+
+			annotation SummarizationSetBy = Automatic
+
+		partition calendar = m
+			mode: import
+			source = ```
+					let
+					    Source = Sql.Database(
+					        "akelll3276yuxkzbgz77f3h4rm-72oyib2nkaiubetlsrpjb3yyme.datawarehouse.fabric.microsoft.com",
+					        "RIT_RS_Reporting_Lakehouse"
+					    ),
+
+					    calendar = Source{[Schema="dbo",Item="calendar"]}[Data]
+					    
+					in
+					    calendar
+					```
+
+		annotation PBI_ResultType = Table
+
+		annotation PBI_NavigationStepName = Navigation
