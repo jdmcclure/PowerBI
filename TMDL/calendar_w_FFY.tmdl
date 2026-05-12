@@ -3,7 +3,7 @@ createOrReplace
 	/// Calendar dimension table with one row per calendar day.
 	/// Grain: one row per date.
 	/// Serves as the primary date dimension; relates to fact tables via the Date column (primary key).
-	/// All columns are imported directly from the data warehouse — none are DAX calculated columns.
+	/// All columns are imported directly from the Lakehouse (referred to as "DW" for the rest of this document) — none are DAX calculated columns.
 	///
 	/// Fiscal year (FY) definition: July 1 – June 30.
 	///   e.g. FY2024 = July 1 2023 – June 30 2024.
