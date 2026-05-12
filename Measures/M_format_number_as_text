@@ -1,0 +1,4 @@
+M_department_number = 
+VAR dept = SELECTEDVALUE('table'[column])
+RETURN
+FORMAT(dept, "0000") & UNICHAR(8203)
