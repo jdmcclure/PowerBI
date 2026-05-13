@@ -1,103 +1,79 @@
 let
+    // Connect to the OSP Lakehouse in the Fabric data warehouse
     Source = Sql.Database(
-        "akelll3276yuxkzbgz77f3h4rm-72oyib2nkaiubetlsrpjb3yyme.datawarehouse.fabric.microsoft.com", 
-        "RIT_RS_Reporting_Lakehouse"
+        "akelll3276yuxkzbgz77f3h4rm-m4untwscfssuzktaacrwgt2faq.datawarehouse.fabric.microsoft.com",
+        "OSP_Lakehouse"
     ),
 
-    eps_proposal = Source{[Schema="dbo",Item="eps_proposal"]}[Data],
+    // Pull the award table from the dbo schema
+    dbo_award = Source{[Schema = "dbo", Item = "award"]}[Data],
 
-    Changed_type = Table.TransformColumnTypes(
-        eps_proposal,
-        {
-            {"PROJECT_START_DATE", type date}, 
-            {"PROJECT_END_DATE", type date}
-        }
-    ),
-
+    // Join award to sponsor lookup on SPONSOR_CODE
     Merged_sponsor = Table.NestedJoin(
-        Changed_type, 
-        {"SPONSOR_CODE"}, sponsor, 
-        {"SPONSOR_CODE"}, "SPONSOR", 
+        dbo_award, {"SPONSOR_CODE"},
+        SPONSOR, {"SPONSOR_CODE"},
+        "sponsor",
         JoinKind.LeftOuter
     ),
 
+    // Expand sponsor name and type from the nested join
     Expanded_sponsor = Table.ExpandTableColumn(
-        Merged_sponsor, 
-        "SPONSOR", 
-        {"SPONSOR_NAME"}, 
-        {"SPONSOR_NAME"}
+        Merged_sponsor,
+        "sponsor",
+        {"SPONSOR_NAME", "SPONSOR_TYPE_DESCRIPTION"},
+        {"SPONSOR_NAME", "SPONSOR_TYPE"}
     ),
 
+    // Join award to sponsor lookup again on PRIME_SPONSOR_CODE
     Merged_prime_sponsor = Table.NestedJoin(
-        Expanded_sponsor, 
-        {"PRIME_SPONSOR_CODE"}, sponsor, 
-        {"SPONSOR_CODE"}, "SPONSOR", 
+        Expanded_sponsor, {"PRIME_SPONSOR_CODE"},
+        SPONSOR, {"SPONSOR_CODE"},
+        "sponsor",
         JoinKind.LeftOuter
     ),
 
+    // Expand prime sponsor name from the nested join
     Expanded_prime_sponsor = Table.ExpandTableColumn(
-        Merged_prime_sponsor, 
-        "SPONSOR", 
-        {"SPONSOR_NAME"}, 
-        {"SPONSOR_NAME_PRIME"}
+        Merged_prime_sponsor,
+        "sponsor",
+        {"SPONSOR_NAME"},
+        {"sponsor.SPONSOR_NAME.1"}
     ),
 
-    Removed_columns = Table.RemoveColumns(
+    // Rename expanded columns to final readable names
+    Renamed_columns = Table.RenameColumns(
         Expanded_prime_sponsor,
         {
-            "IS_HIERARCHY", 
-            "UPDATE_TIMESTAMP", 
-            "DEADLINE_DATE", 
-            "SUBMIT_FLAG", 
-            "DEADLINE_TYPE", 
-            "HIERARCHY_PROPOSAL_NUMBER", 
-            "ACTIVITY_TYPE_CODE", 
-            "NARRATIVE_STATUS", 
-            "NSF_SEQUENCE_NUMBER", 
-            "SPONSOR_PROPOSAL_NUMBER", 
-            "DOCUMENT_NUMBER", 
-            "PROPOSAL_TYPE_CODE", 
-            "STATUS_CODE", 
-            "BASE_PROPOSAL_NUMBER", 
-            "ORGANIZATION_ID", 
-            "AGENCY_ROUTING_IDENTIFIER", 
-            "PROGRAM_ANNOUNCEMENT_NUMBER", 
-            "PROGRAM_ANNOUNCEMENT_TITLE", 
-            "CONTINUED_FROM", 
-            "INST_PROP_CREATE_DATE", 
-            "SUBMISSION_TYPE", 
-            "ACTION_NEEDED_BY", 
-            "ROUTING_STATUS", 
-            "SUBMITTED_BY", 
-            "SUBMITTED_TO_ROUTING_DATE", 
-            "IP_STATUS", 
-            "PERSONS_ASSOCIATED", 
-            "INST_PROP_CREATE_USER", 
-            "ASSOCIATED_AWARDS_AND_ACCOUNTS", 
-            "ASSOCIATED_NEGOTIATIONS", 
-            "LAST_UPDATED_BY", 
-            "PRIME_SPONSOR_CODE", 
-            "SPONSOR_CODE",
-            "CURRENT_ACCOUNT_NUMBER",
-            "CURRENT_AWARD_NUMBER",
-            "BUDGET_APPROVAL_DATE", 
-            "ON_OFF_CAMPUS", 
-            "TOTAL_COST", 
-            "TOTAL_DIRECT_COST", 
-            "TOTAL_INDIRECT_COST", 
-            "FA_RATE", 
-            "RATE_CLASS", 
-            "COUNT_RECALLS", 
-            "COUNT_RETURNS"
+            {"sponsor.SPONSOR_NAME.1", "PRIME_SPONSOR_NAME"},
+            {"sponsor.SPONSOR_NAME", "SPONSOR_NAME"}
         }
     ),
 
-    Changed_type = Table.TransformColumnTypes(
-        Removed_columns,
+    // Keep only the columns needed for downstream reporting
+    Removed_other_columns = Table.SelectColumns(
+        Renamed_columns,
         {
-            {"FINALIZED_DATE", type date}
+            "AWARD_ID",
+            "TITLE",
+            "AWARD_NUMBER",
+            "LEAD_UNIT_NUMBER",
+            "AWARD_STATUS",
+            "ACCOUNT_NUMBER",
+            "PROJECT_START_DT",
+            "PROJECT_END_DT",
+            "SPONSOR_AWARD_NUMBER",
+            "AWARD_SEQUENCE_STATUS",
+            "AWARD_NUMBER_ROOT",
+            "OBLIGATED_AMOUNT",
+            "SPONSOR_NAME",
+            "PRIME_SPONSOR_NAME"
         }
-    )
+    ),
 
+    // Exclude awards with no account number
+    Filtered_rows = Table.SelectRows(
+        Removed_other_columns,
+        each ([ACCOUNT_NUMBER] <> null and [ACCOUNT_NUMBER] <> "")
+    )
 in
-    Changed_type
+    Filtered_rows
