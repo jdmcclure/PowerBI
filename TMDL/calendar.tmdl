@@ -285,6 +285,7 @@ createOrReplace
 			dataType: string
 			summarizeBy: none
 			sourceColumn: CY_Quarter
+            sortByColumn: CY_Quarter_Num
 
 			annotation SummarizationSetBy = Automatic
 
@@ -295,6 +296,7 @@ createOrReplace
 			dataType: string
 			summarizeBy: none
 			sourceColumn: FY_Quarter
+            sortByColumn: FY_Quarter_Num
 
 			annotation SummarizationSetBy = Automatic
 
@@ -357,6 +359,7 @@ createOrReplace
 			dataType: string
 			summarizeBy: none
 			sourceColumn: FY_Month_Year
+            sortByColumn: FY_Month_Year_Num
 
 			annotation SummarizationSetBy = Automatic
 
@@ -406,6 +409,7 @@ createOrReplace
 			dataType: string
 			summarizeBy: none
 			sourceColumn: FY_Quarter_Year
+            sortByColumn: FY_Quarter_Year_Num
 
 			annotation SummarizationSetBy = Automatic
 
@@ -429,6 +433,7 @@ createOrReplace
 			dataType: string
 			summarizeBy: none
 			sourceColumn: CY_Quarter_Year
+            sortByColumn: CY_Quarter_Year_Num
 
 			annotation SummarizationSetBy = Automatic
 
