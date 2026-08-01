@@ -1,53 +1,13 @@
-M_active_days_in_slicer_range = 
-
-/*
-This measure calculates the number of active days that fall within a 
-selected slicer date range. 
-Records in your data table should have a start date and an end date.
-Link a calendar table to the start date and use the 'Calendar'[Date] column in the slicer.
-*/
-
-// Slicer start date is based on the MIN of the calendar table date column
-VAR slicer_start = MIN('Calendar'[Date])
-
-//Slicer end date is based on the MAX of the calendar table date column
-VAR slicer_end = MAX('Calendar'[Date])
-
-/* 
-The overlap start checks to see if the data table start date is greater than the slicer start date,
-if it is it uses the data table start date, if it is not it uses the slicer start date
-*/
-VAR overlap_start = 
-    IF(
-        'Combined_Cage_Cards'[M_start_date] > slicer_start,
-        'Combined_Cage_Cards'[M_start_date],
-        slicer_start
-    )
-
-/*
-The overlap end checks to see if the data table end date is less than slicer end date,
-if it is it uses the data table end date, if it is not it uses the slicer end date
-*/
-VAR overlap_end = 
-    IF(
-        'Combined_Cage_Cards'[M_end_date] < slicer_end,
-        'Combined_Cage_Cards'[M_end_date],
-        slicer_end
-    )
-
-RETURN
-    /*
-    If the calculation is being viewed at the project_number (account number) level, it will show the 
-    date difference in days between the overlap start date and the overlap end date.
-    */
-    IF(
-        ISINSCOPE('Combined_Cage_Cards'[CAGE_CARD_ID]),
-            SUMX(
-                AMS_CAGE_CARDS_R,
-                DATEDIFF(
-                    overlap_start,
-                    overlap_end,
-                    DAY
-                ) + 1
-            )
-    )
+=SWITCH(
+    TRUE(), 
+    LEFT([@[ORG_CD]],4)="1490","CEMML", 
+    LEFT([@[HE FUNCTION CODE]],4) = "RSAD", "Other Sponsored Activities",
+    LEFT([@[HE FUNCTION NAME]],8)="Research","Research", 
+    LEFT([@[HE FUNCTION CODE]],4) = "PSAC", "Research", 
+    LEFT([@[HE FUNCTION CODE]],4) = "SFAC", "Research", 
+    LEFT([@[HE FUNCTION CODE]],4) = "PSAE", "Research",
+    LEFT([@[HE FUNCTION CODE]],4) = "PSAM", "Research",
+    LEFT([@[HE FUNCTION CODE]],4) = "PSAN", "Research", 
+    LEFT([@[HE FUNCTION NAME]],11)="Instruction","Instruction",
+    "Other Sponsored Activities"
+)
