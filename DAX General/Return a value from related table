@@ -1,0 +1,7 @@
+// This will return the primary investigator associated with the selected value. Measure works in proposal_hist and pulls data from proposal_hist_pis table since there is already a relationship.
+
+M_primary_investigator = 
+CALCULATE(
+    SELECTEDVALUE( 'proposal_hist_pis'[PERSON_FULL_NM] ),
+    'proposal_hist_pis'[PERSON_ROLE] = "Primary PI"
+)

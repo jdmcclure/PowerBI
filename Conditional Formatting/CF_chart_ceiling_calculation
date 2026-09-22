@@ -1,0 +1,10 @@
+// Calculate a ceiling to expand the chart area a bit. Use this as max value in chart settings. Finds the max value grouped by a specific column, then multiplies that max value by a chosen amount over 1 (in this case 1% higher)
+
+CF_sum_expenditures_ceiling = 
+VAR _max =
+    MAXX (
+        ALL ( 'expenditures'[FSC_YR] ),
+        [M_sum_expenditures]
+    )
+RETURN
+    _max * 1.01
