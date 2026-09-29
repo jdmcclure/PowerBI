@@ -1,0 +1,46 @@
+Level Color =
+SWITCH (
+    TRUE,
+ 
+    -- Month level: highlight months exceeding 15% of their year
+    ISINSCOPE ( 'Date'[Year Month] ) || ISINSCOPE ( 'Date'[Year Month Short] ),
+        VAR MonthValue = [Sales Amount]
+        VAR YearTotal =
+            CALCULATE (
+                [Sales Amount],
+                REMOVEFILTERS ( 'Date' ),
+                VALUES ( 'Date'[Year] )
+            )
+        VAR Share = DIVIDE ( MonthValue, YearTotal )
+        RETURN
+            IF ( Share > 0.15, "Gold", BLANK () ),
+ 
+    -- Quarter level: green if at or above the average quarter, pink if below
+    ISINSCOPE ( 'Date'[Year Quarter] ),
+        VAR QuarterValue = [Sales Amount]
+        VAR AverageQuarter =
+            CALCULATE (
+                AVERAGEX (
+                    VALUES ( 'Date'[Year Quarter] ),
+                    [Sales Amount]
+                ),
+                REMOVEFILTERS ( 'Date' )
+            )
+        RETURN
+            IF ( QuarterValue >= AverageQuarter, "LightGreen", "LightPink" ),
+ 
+    -- Year level: shade by share of grand total
+    ISINSCOPE ( 'Date'[Year] ),
+        VAR YearValue = [Sales Amount]
+        VAR GrandTotal =
+            CALCULATE ( [Sales Amount], REMOVEFILTERS ( 'Date' ) )
+        VAR Share = DIVIDE ( YearValue, GrandTotal )
+        RETURN
+            SWITCH (
+                TRUE,
+                Share > 0.40, "SteelBlue",
+                Share > 0.25, "CornflowerBlue",
+                Share > 0.15, "SkyBlue",
+                "LightBlue"
+            )
+)
