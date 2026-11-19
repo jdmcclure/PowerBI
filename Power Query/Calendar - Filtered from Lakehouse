@@ -10,3 +10,7 @@ let
     filtered_calendar = Table.SelectRows(dbo_calendar, each [Date] >= MinDate and [Date] <= MaxDate)
 in
     filtered_calendar
+
+-- set date or now
+MinDate = #date(1984, 7, 1),
+MaxDate = Date.From(DateTime.LocalNow()),
